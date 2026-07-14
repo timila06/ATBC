@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Australia Thailand Business Council</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#home" aria-label="ATBC home">
+        <img src="assets/logo.png" alt="Australia Thailand Business Council logo" />
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">Menu</button>
+      <nav class="main-nav" aria-label="Primary navigation">
+        <a href="#home">Home</a>
+        <a href="#about">About Us</a>
+        <a href="#membership">Memberships</a>
+        <a href="#sponsor">Sponsor</a>
+        <a href="#activity">Activity</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="home" class="page hero-page is-active" data-bg="australia">
+        <div class="hero-copy">
+          <p class="eyebrow">Bilateral business network</p>
+          <h1>Australia Thailand Business Council</h1>
+          <p class="lead">A modern council platform for connecting executives, investors, public-sector partners, and emerging businesses across Australia and Thailand.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#membership">Explore membership</a>
+            <a class="button ghost" href="#activity">View activity</a>
+          </div>
+        </div>
+        <div class="signal-panel" aria-label="Council highlights">
+          <div>
+            <strong>2 markets</strong>
+            <span>Australia and Thailand</span>
+          </div>
+          <div>
+            <strong>Practical access</strong>
+            <span>Briefings, introductions, and events</span>
+          </div>
+          <div>
+            <strong>Senior network</strong>
+            <span>Business, government, and partner groups</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="page content-page">
+        <div class="section-head">
+          <p class="eyebrow">About us</p>
+          <h2>Built for trade, investment, and trusted introductions.</h2>
+          <p>The Council supports organisations working between Australia and Thailand with access to decision makers, market context, member events, and practical business connections.</p>
+        </div>
+        <div class="feature-grid">
+          <article>
+            <span>01</span>
+            <h3>Government access</h3>
+            <p>Member briefings and dialogue with Australian and Thai policy stakeholders.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Boardroom briefings</h3>
+            <p>Focused sessions for executives to understand current opportunities and risks.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Business introductions</h3>
+            <p>Warm connections to partners, advisers, and market specialists in both countries.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Webinars and events</h3>
+            <p>Hybrid activity that keeps the bilateral business community informed and connected.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="membership" class="page split-page" data-bg="thailand">
+        <div class="section-head light">
+          <p class="eyebrow">Memberships</p>
+          <h2>Choose the access level that fits your organisation.</h2>
+          <p>Draft tiers for senior review. Pricing and benefits can be adjusted before launch.</p>
+        </div>
+        <div class="pricing-grid">
+          <article>
+            <h3>Corporate</h3>
+            <p>For established companies active in bilateral trade.</p>
+            <ul>
+              <li>Member events and briefings</li>
+              <li>Business introductions</li>
+              <li>Directory listing</li>
+            </ul>
+            <a href="#contact">Enquire</a>
+          </article>
+          <article class="featured">
+            <h3>Executive Partner</h3>
+            <p>For organisations seeking higher visibility and senior access.</p>
+            <ul>
+              <li>Priority invitations</li>
+              <li>Boardroom roundtables</li>
+              <li>Featured activity placement</li>
+            </ul>
+            <a href="#contact">Discuss options</a>
+          </article>
+          <article>
+            <h3>Individual</h3>
+            <p>For professionals building Australia-Thailand networks.</p>
+            <ul>
+              <li>Community events</li>
+              <li>Newsletter updates</li>
+              <li>Member introductions</li>
+            </ul>
+            <a href="#contact">Join interest list</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="sponsor" class="page content-page">
+        <div class="section-head">
+          <p class="eyebrow">Sponsor</p>
+          <h2>Give partners visible, credible presence without visual clutter.</h2>
+          <p>Sponsors can support signature events, briefings, trade missions, and sector forums. The draft layout keeps sponsor visibility professional and simple.</p>
+        </div>
+        <div class="sponsor-band">
+          <div class="sponsor-copy">
+            <h3>Suggested sponsor placements</h3>
+            <p>Homepage acknowledgement, event-page feature, newsletter mention, and speaking opportunities where relevant.</p>
+          </div>
+          <div class="logo-wall" aria-label="Sponsor placeholders">
+            <span>Principal Sponsor</span>
+            <span>Event Partner</span>
+            <span>Knowledge Partner</span>
+            <span>Community Partner</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="activity" class="page activity-page">
+        <div class="section-head">
+          <p class="eyebrow">Activity</p>
+          <h2>Post council updates, briefings, and upcoming events.</h2>
+          <p>This draft includes a browser-based activity composer for review. A real launch can connect this to a CMS or admin login.</p>
+        </div>
+        <div class="activity-layout">
+          <form class="activity-form" id="activityForm">
+            <label>
+              Activity title
+              <input name="title" type="text" placeholder="Thailand market briefing" required />
+            </label>
+            <label>
+              Date
+              <input name="date" type="date" required />
+            </label>
+            <label>
+              Category
+              <select name="category">
+                <option>Event</option>
+                <option>Briefing</option>
+                <option>News</option>
+                <option>Delegation</option>
+              </select>
+            </label>
+            <label>
+              Summary
+              <textarea name="summary" rows="4" placeholder="Short description for members and visitors" required></textarea>
+            </label>
+            <button class="button primary" type="submit">Post activity</button>
+          </form>
+          <div class="activity-list" id="activityList" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section id="contact" class="page contact-page" data-bg="australia">
+        <div class="contact-card">
+          <p class="eyebrow">Contact</p>
+          <h2>Start a conversation with ATBC.</h2>
+          <p>For membership, sponsorship, event, and partnership enquiries.</p>
+          <a class="contact-link" href="mailto:info@aust-thai.org.au">info@aust-thai.org.au</a>
+          <div class="contact-grid">
+            <span>Sydney and Bangkok network</span>
+            <span>Member briefings</span>
+            <span>Partner introductions</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Australia Thailand Business Council</span>
+      <span>Draft website concept for senior review</span>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
