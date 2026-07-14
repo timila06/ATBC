@@ -203,26 +203,44 @@ a {
 
 .variant-fullscreen-logo .hero-page {
   min-height: 190vh;
-  padding-top: 92px;
+  padding: 82px 0 64px;
 }
 
 .variant-fullscreen-logo .hero-logo-panel {
-  width: min(1160px, calc(100vw - 36px));
-  margin: 0 auto 44px;
+  width: 100vw;
+  height: calc(100vh - 82px);
+  margin: 0 0 44px;
+  border: 0;
+  border-radius: 0;
+  background:
+    linear-gradient(rgba(217, 233, 246, 0.18), rgba(217, 233, 246, 0.18)),
+    url("assets/atbc-banner-logo.png") center / cover no-repeat;
+  box-shadow: none;
 }
 
 .variant-fullscreen-logo .hero-logo-panel img {
   width: 100%;
-  min-height: calc(100vh - 140px);
-  object-fit: cover;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0.95;
+  filter: drop-shadow(0 18px 50px rgba(20, 32, 43, 0.18));
 }
 
 .variant-fullscreen-logo .hero-media-stack {
   top: calc(100vh + 118px);
+  right: clamp(18px, 5vw, 72px);
 }
 
 .variant-fullscreen-logo .hero-copy {
+  margin-left: clamp(18px, 5vw, 72px);
   margin-top: 28px;
+}
+
+.variant-fullscreen-logo .hero-actions,
+.variant-fullscreen-logo .hero-copy .lead,
+.variant-fullscreen-logo .hero-copy .eyebrow,
+.variant-fullscreen-logo .hero-copy h1 {
+  max-width: 760px;
 }
 
 .variant-logo-header .site-header {
