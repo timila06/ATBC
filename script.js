@@ -6,6 +6,10 @@ const activityForm = document.querySelector("#activityForm");
 const activityList = document.querySelector("#activityList");
 const missionDetail = document.querySelector("#missionDetail");
 const missionCards = [...document.querySelectorAll(".mission-card")];
+const editStatementBtn = document.querySelector("#editStatementBtn");
+const statementEditor = document.querySelector("#statementEditor");
+const statementInput = document.querySelector("#statementInput");
+const presidentStatement = document.querySelector("#presidentStatement");
 
 const missionPanels = {
   networking: {
@@ -74,11 +78,10 @@ function renderActivities() {
 
 function showPage(hash) {
   const target = hash && document.querySelector(hash) ? hash : "#home";
-  pages.forEach((page) => page.classList.toggle("is-active", `#${page.id}` === target));
+  document.querySelector(target).scrollIntoView({ behavior: "smooth", block: "start" });
   navLinks.forEach((link) => link.classList.toggle("is-active", link.getAttribute("href") === target));
   header.classList.remove("nav-open");
   menuToggle.setAttribute("aria-expanded", "false");
-  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 menuToggle.addEventListener("click", () => {
@@ -87,6 +90,13 @@ menuToggle.addEventListener("click", () => {
 });
 
 window.addEventListener("hashchange", () => showPage(window.location.hash));
+
+window.addEventListener("scroll", () => {
+  const current = pages
+    .map((page) => ({ id: page.id, top: Math.abs(page.getBoundingClientRect().top - 90) }))
+    .sort((a, b) => a.top - b.top)[0]?.id;
+  navLinks.forEach((link) => link.classList.toggle("is-active", link.getAttribute("href") === `#${current}`));
+});
 
 activityForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -105,5 +115,28 @@ missionCards.forEach((card) => {
   });
 });
 
+const savedStatement = localStorage.getItem("atbcPresidentStatement");
+if (savedStatement) {
+  presidentStatement.textContent = savedStatement;
+}
+
+statementInput.value = presidentStatement.textContent;
+
+editStatementBtn.addEventListener("click", () => {
+  statementEditor.classList.toggle("is-open");
+  statementInput.focus();
+});
+
+statementEditor.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const nextStatement = statementInput.value.trim();
+  if (!nextStatement) return;
+  presidentStatement.textContent = nextStatement;
+  localStorage.setItem("atbcPresidentStatement", nextStatement);
+  statementEditor.classList.remove("is-open");
+});
+
 renderActivities();
-showPage(window.location.hash);
+if (window.location.hash) {
+  setTimeout(() => showPage(window.location.hash), 100);
+}
