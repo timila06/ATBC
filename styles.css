@@ -111,13 +111,15 @@ a {
 
 .hero-page::before,
 .split-page::before,
-.contact-page::before {
+.contact-page::before,
+.mission-page::before,
+.partners-page::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -2;
   background: center / cover no-repeat;
-  opacity: 0.58;
+  opacity: 0.78;
 }
 
 [data-bg="australia"]::before {
@@ -130,19 +132,24 @@ a {
 
 .hero-page::after,
 .split-page::after,
-.contact-page::after {
+.contact-page::after,
+.mission-page::after,
+.partners-page::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(246, 247, 247, 0.95), rgba(246, 247, 247, 0.76) 50%, rgba(246, 247, 247, 0.42)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(35, 103, 168, 0.12));
+    linear-gradient(90deg, rgba(246, 247, 247, 0.9), rgba(246, 247, 247, 0.66) 48%, rgba(246, 247, 247, 0.26)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(35, 103, 168, 0.08));
 }
 
 .hero-copy {
   width: min(790px, 100%);
   padding-top: clamp(36px, 7vh, 86px);
+  border-left: 6px solid var(--red);
+  padding-left: clamp(18px, 3vw, 34px);
+  text-shadow: 0 1px 18px rgba(255, 255, 255, 0.72);
 }
 
 .eyebrow {
@@ -280,6 +287,29 @@ h3 {
     linear-gradient(135deg, rgba(35, 103, 168, 0.1), rgba(185, 139, 66, 0.08));
 }
 
+.history-strip {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  align-items: center;
+  margin: 0 0 24px;
+  border: 1px solid rgba(185, 139, 66, 0.34);
+  border-radius: 8px;
+  padding: 22px;
+  background: linear-gradient(135deg, #fff8ea, #eef6fc);
+}
+
+.history-strip strong {
+  color: var(--red);
+  font-size: 24px;
+}
+
+.history-strip p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .section-head {
   margin-bottom: 38px;
 }
@@ -359,6 +389,28 @@ h3 {
 
 .pricing-grid a {
   color: var(--red);
+  font-weight: 800;
+}
+
+.price {
+  color: var(--blue) !important;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.benefit-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.benefit-rail span {
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--white);
   font-weight: 800;
 }
 
@@ -460,6 +512,118 @@ h3 {
 .board-grid strong,
 .board-grid span {
   display: block;
+}
+
+.mission-page,
+.partners-page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.mission-page::after {
+  background:
+    linear-gradient(90deg, rgba(20, 32, 43, 0.88), rgba(20, 32, 43, 0.48)),
+    linear-gradient(135deg, rgba(185, 139, 66, 0.2), rgba(35, 103, 168, 0.14));
+}
+
+.mission-shell {
+  width: min(1120px, 100%);
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.mission-card {
+  min-height: 160px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--white);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.mission-card span,
+.mission-card strong {
+  display: block;
+}
+
+.mission-card span {
+  margin-bottom: 34px;
+  color: #ffd88f;
+  font-weight: 800;
+}
+
+.mission-card strong {
+  font-size: 22px;
+}
+
+.mission-card.is-selected {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.mission-detail {
+  width: min(760px, 100%);
+  border-radius: 8px;
+  padding: 26px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow);
+}
+
+.mission-detail p {
+  color: var(--muted);
+  line-height: 1.62;
+}
+
+.partners-page::after {
+  background:
+    linear-gradient(90deg, rgba(246, 247, 247, 0.92), rgba(246, 247, 247, 0.58)),
+    linear-gradient(135deg, rgba(35, 103, 168, 0.08), rgba(185, 139, 66, 0.08));
+}
+
+.partner-map {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  width: min(980px, 100%);
+}
+
+.partner-map article {
+  min-height: 170px;
+  border: 1px solid rgba(217, 222, 227, 0.72);
+  border-radius: 8px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--shadow);
+}
+
+.partner-map span {
+  display: inline-grid;
+  width: 58px;
+  aspect-ratio: 1;
+  margin-bottom: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: var(--white);
+  font-weight: 800;
+}
+
+.partner-map strong {
+  display: block;
+  color: var(--navy);
+  font-size: 20px;
+  line-height: 1.2;
 }
 
 .board-grid strong {
@@ -612,7 +776,10 @@ footer {
   .pricing-grid,
   .sponsor-band,
   .activity-layout,
-  .president-feature {
+  .president-feature,
+  .mission-grid,
+  .partner-map,
+  .history-strip {
     grid-template-columns: 1fr;
   }
 

@@ -4,6 +4,23 @@ const header = document.querySelector(".site-header");
 const menuToggle = document.querySelector(".menu-toggle");
 const activityForm = document.querySelector("#activityForm");
 const activityList = document.querySelector("#activityList");
+const missionDetail = document.querySelector("#missionDetail");
+const missionCards = [...document.querySelectorAll(".mission-card")];
+
+const missionPanels = {
+  networking: {
+    title: "Business Networking and Engagement",
+    body: "Organise networking events that connect business leaders and stakeholders from Thailand and Australia while building relationships with potential partner organisations."
+  },
+  missions: {
+    title: "Trade Missions and Roadshows",
+    body: "Develop trade missions, exhibitions, and business roadshows to promote Thai businesses in Australia through strategic partnerships and collaboration."
+  },
+  education: {
+    title: "Education and Exchange Programs",
+    body: "Foster partnerships between Australian and Thai universities to support student exchanges, internships, scholarships, and collaborative educational programs."
+  }
+};
 
 const starterActivities = [
   {
@@ -77,6 +94,15 @@ activityForm.addEventListener("submit", (event) => {
   saveActivities([data, ...storedActivities()]);
   activityForm.reset();
   renderActivities();
+});
+
+missionCards.forEach((card) => {
+  card.addEventListener("click", () => {
+    missionCards.forEach((item) => item.classList.remove("is-selected"));
+    card.classList.add("is-selected");
+    const panel = missionPanels[card.dataset.panel];
+    missionDetail.innerHTML = `<h3>${panel.title}</h3><p>${panel.body}</p>`;
+  });
 });
 
 renderActivities();
