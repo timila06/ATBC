@@ -261,11 +261,24 @@ section {
   flex-direction: column;
 }
 
-.hero-logo-full img {
-  width: min(880px, 85vw);
-  height: auto;
+.hero-logo-card {
+  width: min(1000px, 90vw);
+  aspect-ratio: 2 / 1;
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 40px);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.hero-logo-card img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 8px 40px rgba(0,0,0,.7));
 }
 
 .hero-scroll-cue {
@@ -1829,7 +1842,7 @@ footer {
   .sponsor-placements   { grid-template-columns: 1fr; }
   .footer-top           { grid-template-columns: 1fr; gap: 32px; }
   .footer-bottom        { flex-direction: column; text-align: center; }
-  .hero-logo-full img   { width: 92vw; }
+  .hero-logo-card       { width: 92vw; }
 }
 
 /* ============================================================
