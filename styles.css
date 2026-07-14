@@ -62,6 +62,15 @@ a {
   border-radius: 6px;
 }
 
+.brand span {
+  display: block;
+  max-width: 270px;
+  color: var(--navy);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.05;
+}
+
 .main-nav {
   display: flex;
   align-items: center;
@@ -182,6 +191,49 @@ a {
   display: block;
   width: 100%;
   height: auto;
+}
+
+.variant-small-logo .hero-logo-panel {
+  width: min(340px, 80vw);
+}
+
+.variant-small-logo .hero-logo-panel img {
+  min-height: 0;
+}
+
+.variant-fullscreen-logo .hero-page {
+  min-height: 190vh;
+  padding-top: 92px;
+}
+
+.variant-fullscreen-logo .hero-logo-panel {
+  width: min(1160px, calc(100vw - 36px));
+  margin: 0 auto 44px;
+}
+
+.variant-fullscreen-logo .hero-logo-panel img {
+  width: 100%;
+  min-height: calc(100vh - 140px);
+  object-fit: cover;
+}
+
+.variant-fullscreen-logo .hero-media-stack {
+  top: calc(100vh + 118px);
+}
+
+.variant-fullscreen-logo .hero-copy {
+  margin-top: 28px;
+}
+
+.variant-logo-header .site-header {
+  min-height: 92px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.62)),
+    url("assets/atbc-banner-logo.png") left center / auto 120px no-repeat;
+}
+
+.variant-logo-header .brand img {
+  opacity: 0;
 }
 
 .hero-media-stack {
