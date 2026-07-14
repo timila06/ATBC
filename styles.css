@@ -103,7 +103,9 @@ a {
 
 .hero-page,
 .split-page,
-.contact-page {
+.contact-page,
+.member-detail-page,
+.sponsor-tier-page {
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -113,7 +115,9 @@ a {
 .split-page::before,
 .contact-page::before,
 .mission-page::before,
-.partners-page::before {
+.partners-page::before,
+.member-detail-page::before,
+.sponsor-tier-page::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -130,11 +134,17 @@ a {
   background-image: url("assets/thailand.jpg");
 }
 
+[data-bg="business"]::before {
+  background-image: url("assets/business-skyline.jpg");
+}
+
 .hero-page::after,
 .split-page::after,
 .contact-page::after,
 .mission-page::after,
-.partners-page::after {
+.partners-page::after,
+.member-detail-page::after,
+.sponsor-tier-page::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -145,11 +155,36 @@ a {
 }
 
 .hero-copy {
+  position: relative;
+  z-index: 2;
   width: min(790px, 100%);
   padding-top: clamp(36px, 7vh, 86px);
   border-left: 6px solid var(--red);
   padding-left: clamp(18px, 3vw, 34px);
   text-shadow: 0 1px 18px rgba(255, 255, 255, 0.72);
+}
+
+.hero-media-stack {
+  position: absolute;
+  right: clamp(18px, 5vw, 72px);
+  top: 128px;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 170px 210px;
+  gap: 14px;
+  opacity: 0.92;
+}
+
+.hero-media-stack img {
+  width: 100%;
+  height: 390px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.hero-media-stack img:first-child {
+  margin-top: 58px;
 }
 
 .eyebrow {
@@ -299,6 +334,35 @@ h3 {
   background: linear-gradient(135deg, #fff8ea, #eef6fc);
 }
 
+.editorial-band {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) 1fr;
+  gap: 26px;
+  align-items: stretch;
+  margin: 0 0 24px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.editorial-band img {
+  width: 100%;
+  height: 100%;
+  min-height: 310px;
+  object-fit: cover;
+}
+
+.editorial-band div {
+  padding: clamp(24px, 4vw, 44px);
+}
+
+.editorial-band p:not(.eyebrow) {
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.62;
+}
+
 .history-strip strong {
   color: var(--red);
   font-size: 24px;
@@ -430,7 +494,8 @@ h3 {
   gap: 12px;
 }
 
-.logo-wall span {
+.logo-wall span,
+.logo-wall a {
   display: grid;
   min-height: 96px;
   place-items: center;
@@ -440,6 +505,59 @@ h3 {
   color: #607080;
   font-weight: 800;
   text-align: center;
+}
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(300px, 1fr);
+  gap: 28px;
+  align-items: end;
+  min-height: calc(100vh - 190px);
+}
+
+.detail-copy,
+.detail-list,
+.tier-card {
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 8px;
+  padding: clamp(24px, 4vw, 46px);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--shadow);
+}
+
+.detail-copy h2,
+.tier-card h2 {
+  color: var(--navy);
+}
+
+.detail-copy p,
+.tier-card p {
+  color: var(--muted);
+  line-height: 1.62;
+}
+
+.detail-list {
+  display: grid;
+  gap: 12px;
+  background: rgba(20, 32, 43, 0.84);
+}
+
+.detail-list span {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 16px 0;
+  color: var(--white);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.sponsor-tier-page::after,
+.member-detail-page::after {
+  background: linear-gradient(90deg, rgba(246,247,247,.82), rgba(246,247,247,.3));
+}
+
+.tier-card {
+  width: min(760px, 100%);
+  margin-top: clamp(60px, 10vh, 120px);
 }
 
 .president-feature {
@@ -779,8 +897,22 @@ footer {
   .president-feature,
   .mission-grid,
   .partner-map,
-  .history-strip {
+  .history-strip,
+  .editorial-band,
+  .detail-layout {
     grid-template-columns: 1fr;
+  }
+
+  .hero-media-stack {
+    position: relative;
+    right: auto;
+    top: auto;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 28px;
+  }
+
+  .hero-media-stack img {
+    height: 230px;
   }
 
   .signal-panel {
