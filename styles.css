@@ -203,12 +203,18 @@ a {
 
 .variant-fullscreen-logo .hero-page {
   min-height: 190vh;
-  padding: 82px 0 64px;
+  padding: 0 0 64px;
+}
+
+.variant-fullscreen-logo .site-header {
+  background: rgba(255, 255, 255, 0.68);
+  border-bottom-color: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(14px);
 }
 
 .variant-fullscreen-logo .hero-logo-panel {
   width: 100vw;
-  height: calc(100vh - 82px);
+  height: 72vh;
   margin: 0 0 44px;
   border: 0;
   border-radius: 0;
