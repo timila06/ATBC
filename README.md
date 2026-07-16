@@ -19,10 +19,10 @@ The site presents ATBC's bilateral business network, council role, president sta
 
 ## Role Access Model
 
-This static implementation includes front-end role simulation for review and workflow planning:
+This static implementation includes role-based content workflow planning:
 
 - Admin: content and activity management
-- Website Owner: review and oversight
+- Website Owner: oversight and settings
 - Activity Updater: activity updates
 - President: president statement workflow
 
