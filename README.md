@@ -1,72 +1,37 @@
-# ATBC — Australia Thailand Business Council
+# Australia Thailand Business Council Website
 
-Modern, editorial-style website draft for senior stakeholder review.
+Official website implementation for the Australia Thailand Business Council (ATBC).
 
-## Preferred File
+## Overview
 
-Open **`index.html`** in any browser — no build step required.
+The site presents ATBC's bilateral business network, council role, president statement, membership options, sponsorship pathways, board members, strategic partners, activity updates, and contact channels.
 
-`version-fullscreen-logo.html` redirects to `index.html`.
+## Pages
 
-## Design Direction
+- `index.html` — Homepage
+- `about.html` — About, history, mission and vision, strategic partners
+- `memberships.html` — Individual and organisation membership details
+- `sponsors.html` — Silver, Gold, Platinum, and custom sponsor pathways
+- `board-members.html` — President and board member information
+- `activity.html` — Activity slider, activity archive, and role-based update form
+- `login.html` — Static role-selection interface for site management flows
+- `contact.html` — Contact information and enquiry form
 
-- Fullscreen ATBC banner logo hero
-- Editorial, image-led layout inspired by council/consulting Wix template style
-- Navy · Gold · Red color palette (Australian and Thai flag references)
-- Playfair Display serif headings + Inter body text
-- Smooth scroll navigation, scroll-reveal animations, scroll progress bar
-- Transparent-to-solid header on scroll
+## Role Access Model
 
-## Sections
+This static implementation includes front-end role simulation for review and workflow planning:
 
-| Section | ID |
-|---|---|
-| Hero / Fullscreen Logo | `#home` |
-| About Us | `#about` |
-| President Statement | `#president` |
-| Leadership & Board | `#board` |
-| Memberships | `#membership` |
-| Individual Membership Detail | `#member-individual` |
-| Organisation Membership Detail | `#member-organisation` |
-| Sponsor | `#sponsor` |
-| Silver Sponsor | `#sponsor-silver` |
-| Gold Sponsor | `#sponsor-gold` |
-| Platinum Sponsor | `#sponsor-platinum` |
-| Mission & Vision | `#mission` |
-| Strategic Partners | `#partners` |
-| Activity / Updates | `#activity` |
-| Contact | `#contact` |
+- Admin: content and activity management
+- Website Owner: review and oversight
+- Activity Updater: activity updates
+- President: president statement workflow
 
-## Interactive Features
+For production authentication, connect these roles to a secure backend or identity provider.
 
-- **President statement editor** — edit + save via localStorage (demo)
-- **Activity posting form** — posts to feed, persisted in localStorage
-- **Mission pillar selector** — click 01/02/03 to see detail text update
-- **Contact form** — demo submit with toast confirmation
-- **Mobile menu** — animated hamburger toggle
-- **Scroll spy** — active nav link updates as you scroll
-- **Scroll progress bar** — top of page
+## Assets
 
-## Files
+Core images live in `assets/`, including the ATBC banner logo and Australia/Thailand imagery.
 
-```
-index.html              — main website
-styles.css              — all styling
-script.js               — all interactions
-assets/
-  atbc-banner-logo.png  — ATBC official banner (hero)
-  logo.png              — ATBC logo (header)
-  australia.jpg         — background
-  thailand.jpg          — background
-  australia-harbour.jpg — editorial image
-  thailand-temple.jpg   — editorial / president portrait
-  business-skyline.jpg  — sponsor section
-```
+## Deployment
 
-## Contact
-
-info@aust-thai.org.au · www.aust-thai.org.au
-
----
-
-*Draft for senior review — July 2026. Not for public release.*
+The site can be hosted as a static website on GitHub Pages or any static hosting service.

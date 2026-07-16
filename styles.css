@@ -197,12 +197,6 @@ section {
   position: relative;
 }
 
-/* Compatibility for the earlier fullscreen-logo variant still used in previews. */
-.variant-fullscreen-logo .hero-logo-panel {
-  height: 50vh !important;
-  max-height: 520px;
-}
-
 .section-inner {
   max-width: var(--max-w);
   margin: 0 auto;
@@ -1861,4 +1855,184 @@ footer {
   z-index: 200;
   transition: width .1s;
   pointer-events: none;
+}
+
+/* ============================================================
+   MULTI-PAGE PRODUCTION LAYOUT
+   ============================================================ */
+.page-main {
+  padding-top: var(--header-h);
+  background: var(--paper);
+}
+
+.page-hero {
+  padding: 110px 0 80px;
+  background:
+    linear-gradient(135deg, rgba(13,31,56,.93), rgba(28,79,138,.75)),
+    url("assets/australia-harbour.jpg") center/cover;
+  color: var(--white);
+}
+
+.page-hero h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(38px, 6vw, 68px);
+  line-height: 1.02;
+  max-width: 980px;
+  margin-bottom: 18px;
+}
+
+.page-hero p:not(.eyebrow) {
+  max-width: 760px;
+  color: rgba(255,255,255,.78);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.home-section,
+.content-page-block {
+  padding: 90px 0;
+}
+
+.home-section:nth-of-type(even) {
+  background: var(--white);
+}
+
+.president-home {
+  background: var(--paper);
+}
+
+.mission-home {
+  background:
+    linear-gradient(135deg, rgba(13,31,56,.94), rgba(13,31,56,.88)),
+    url("assets/thailand-temple.jpg") center/cover fixed;
+  color: var(--white);
+}
+
+.contact-strip {
+  background:
+    linear-gradient(135deg, rgba(13,31,56,.95), rgba(28,79,138,.84)),
+    url("assets/australia.jpg") center/cover;
+}
+
+.home-two-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.home-two-card article {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 34px;
+  box-shadow: var(--shadow-sm);
+}
+
+.home-two-card h3 {
+  font-size: 38px;
+  color: var(--navy);
+  margin: 12px 0;
+}
+
+.home-two-card a,
+.activity-read-more {
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.activity-slider-shell {
+  display: grid;
+  grid-template-columns: 52px 1fr 52px;
+  gap: 16px;
+  align-items: center;
+}
+
+.activity-slider {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(300px, 380px);
+  gap: 18px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 8px 4px 18px;
+}
+
+.activity-slider .activity-card {
+  scroll-snap-align: start;
+  min-height: 260px;
+}
+
+.slider-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--white);
+  font-size: 34px;
+  line-height: 1;
+  box-shadow: var(--shadow-sm);
+}
+
+.home-actions {
+  margin-top: 26px;
+  text-align: center;
+}
+
+.role-editor-only {
+  margin-top: 36px;
+}
+
+.login-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.role-card {
+  text-align: left;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.role-card strong,
+.role-card span {
+  display: block;
+}
+
+.role-card strong {
+  color: var(--navy);
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.role-card span,
+.role-status {
+  color: var(--muted);
+}
+
+.role-status {
+  margin-top: 20px;
+  font-weight: 700;
+}
+
+.board-page-section {
+  background: var(--navy);
+}
+
+@media (max-width: 900px) {
+  .home-two-card,
+  .login-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-slider-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .slider-btn {
+    display: none;
+  }
 }
