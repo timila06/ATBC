@@ -600,8 +600,8 @@ section {
   aspect-ratio: 3/4;
   border-radius: 12px;
   background:
-    linear-gradient(135deg, rgba(13,31,56,.72), rgba(181,37,53,.38)),
-    url('assets/thailand-temple.jpg') center/cover;
+    linear-gradient(180deg, rgba(13,31,56,0) 45%, rgba(13,31,56,.58) 100%),
+    url('assets/president-laksasubha.png') center/cover;
   display: flex;
   align-items: flex-end;
   overflow: hidden;
