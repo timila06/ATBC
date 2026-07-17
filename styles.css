@@ -2160,6 +2160,80 @@ footer {
   text-transform: capitalize;
 }
 
+.activity-delete-btn {
+  margin-top: 18px;
+  color: var(--red);
+  font-weight: 800;
+}
+
+.promotion-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 28px;
+  align-items: start;
+}
+
+.promotion-section-header {
+  margin-bottom: 26px;
+}
+
+.promotion-section-header h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(30px, 5vw, 48px);
+  color: var(--navy);
+  line-height: 1.1;
+}
+
+.promotion-grid,
+#memberPromotionList,
+#promotionApprovalList {
+  display: grid;
+  gap: 18px;
+}
+
+.promotion-card,
+.promotion-panel {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.promotion-card h3,
+.promotion-panel h2,
+.promotion-list-block h3 {
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+
+.promotion-card p,
+.promotion-panel p,
+.empty-state {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.promotion-panel {
+  position: sticky;
+  top: calc(var(--header-h) + 24px);
+}
+
+.promotion-actions,
+.dashboard-actions,
+.auth-tier-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.promotion-list-block {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
 .mission-page-hero {
   background:
     linear-gradient(135deg, rgba(13,31,56,.9), rgba(181,37,53,.58)),
@@ -2230,9 +2304,8 @@ footer {
 }
 
 .role-admin-only,
-.role-updater-only,
 .role-president-only,
-.role-owner-only,
+.role-member-only,
 .role-visitor-only {
   display: none;
 }
@@ -2243,8 +2316,13 @@ footer {
   .membership-home-grid,
   .auth-layout,
   .dashboard-grid,
-  .mission-detail-grid {
+  .mission-detail-grid,
+  .promotion-layout {
     grid-template-columns: 1fr;
+  }
+
+  .promotion-panel {
+    position: static;
   }
 
   .activity-slider-shell {

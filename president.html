@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard | ATBC</title>
+    <title>President Statement | ATBC</title>
     <link rel="stylesheet" href="styles.css?v=20260721" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   </head>
@@ -26,48 +26,38 @@
     </header>
 
     <main class="page-main">
-      <section class="page-hero dashboard-hero">
+      <section class="page-hero">
         <div class="section-inner">
-          <p class="eyebrow">Account dashboard</p>
-          <h1 id="dashboardTitle">Welcome to ATBC.</h1>
-          <p id="dashboardIntro">Your website tools appear below.</p>
-          <button class="btn btn-gold" id="logoutBtn" type="button">Logout</button>
+          <p class="eyebrow">President</p>
+          <h1>Update the monthly President statement.</h1>
+          <p>The saved statement appears on the homepage and board members page.</p>
         </div>
       </section>
 
       <section class="content-page-block">
         <div class="section-inner dashboard-grid">
-          <article class="dashboard-card role-admin-only">
-            <h2>Admin</h2>
-            <p>Manage registered accounts, activity updates, and member promotion approvals.</p>
-            <div class="dashboard-actions">
-              <a class="btn btn-primary" href="activity.html">Manage activity</a>
-              <a class="btn btn-outline-navy" href="promotion.html">Approve promotions</a>
-            </div>
-            <div class="data-panel" id="userRegistry"></div>
-          </article>
-
           <article class="dashboard-card role-president-only">
-            <h2>President Statement</h2>
-            <p>Update the monthly President statement shown on the homepage.</p>
-            <a class="btn btn-primary" href="president.html">Edit statement</a>
+            <h2>Statement editor</h2>
+            <form class="auth-form" id="dashboardStatementForm">
+              <div class="form-group">
+                <label for="dashboardStatementText">Statement</label>
+                <textarea id="dashboardStatementText" name="statement" required></textarea>
+              </div>
+              <button class="btn btn-primary" type="submit">Save statement</button>
+            </form>
           </article>
-
-          <article class="dashboard-card role-member-only">
-            <h2>Business Promotion</h2>
-            <p>Create, edit, and manage your business promotion for admin approval.</p>
-            <a class="btn btn-primary" href="promotion.html">Manage promotion</a>
-          </article>
-
-          <article class="dashboard-card role-visitor-only">
-            <h2>Membership Access</h2>
-            <p>Select a paid membership tier to unlock business promotion tools.</p>
-            <a class="btn btn-gold" href="memberships.html">View memberships</a>
+          <article class="dashboard-card role-president-only">
+            <h2>Quick access</h2>
+            <p>Review public pages and current council updates after saving the statement.</p>
+            <div class="dashboard-actions">
+              <a class="btn btn-outline-navy" href="index.html#president">View homepage statement</a>
+              <a class="btn btn-outline-navy" href="board-members.html#president">View board page</a>
+              <a class="btn btn-primary" href="dashboard.html">Dashboard</a>
+            </div>
           </article>
         </div>
       </section>
     </main>
-
     <div class="toast" id="toast"><span class="toast-icon">✓</span><span id="toastMsg">Updated.</span></div>
     <script src="supabase-config.js?v=20260721"></script>
     <script src="script.js?v=20260721"></script>

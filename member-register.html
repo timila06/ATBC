@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Member Registration | ATBC</title>
+    <link rel="stylesheet" href="styles.css?v=20260721" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-header scrolled" id="siteHeader">
+      <a class="brand" href="index.html"><span class="brand-name">Australia Thailand Business Council</span></a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation"><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="mainNav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="memberships.html">Memberships</a>
+        <a href="sponsors.html">Sponsor</a>
+        <a href="mission.html">Mission</a>
+        <a href="promotion.html">Promotion</a>
+        <a href="board-members.html">Board Members</a>
+        <a href="activity.html">Activity</a>
+        <a href="login.html">Login</a>
+        <a href="contact.html" class="nav-cta">Contact</a>
+      </nav>
+    </header>
+
+    <main class="page-main">
+      <section class="page-hero">
+        <div class="section-inner">
+          <p class="eyebrow">Membership</p>
+          <h1 id="memberTierTitle">Member Registration</h1>
+          <p>Create an official member account, add payment details, and activate promotion access.</p>
+        </div>
+      </section>
+      <section class="content-page-block">
+        <div class="section-inner auth-layout">
+          <article class="auth-card">
+            <p class="eyebrow">Account</p>
+            <h2>Member details</h2>
+            <form id="memberPaymentForm" class="auth-form">
+              <input type="hidden" name="tier" id="selectedTier" />
+              <div class="form-group">
+                <label for="memberName">Full name</label>
+                <input id="memberName" name="name" autocomplete="name" required />
+              </div>
+              <div class="form-group">
+                <label for="memberBusiness">Business name</label>
+                <input id="memberBusiness" name="businessName" required />
+              </div>
+              <div class="form-group">
+                <label for="memberEmail">Official email</label>
+                <input id="memberEmail" name="email" type="email" autocomplete="email" required />
+              </div>
+              <div class="form-group">
+                <label for="memberPassword">Password</label>
+                <input id="memberPassword" name="password" type="password" autocomplete="new-password" minlength="6" required />
+              </div>
+              <div class="form-group">
+                <label for="paymentMethod">Payment method</label>
+                <select id="paymentMethod" name="paymentMethod" required>
+                  <option value="card">Credit or debit card</option>
+                  <option value="bank-transfer">Bank transfer</option>
+                  <option value="invoice">Invoice</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" type="submit">Complete payment and activate</button>
+            </form>
+          </article>
+          <article class="auth-card auth-card-muted">
+            <p class="eyebrow">Promotion access</p>
+            <h2>Member publishing limits</h2>
+            <ul class="membership-benefits">
+              <li>Platinum members can update their promotion twice per week.</li>
+              <li>Gold members can update their promotion once per week.</li>
+              <li>Silver members can update their promotion three times per month.</li>
+              <li>All promotions require Admin approval before publication.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div class="toast" id="toast"><span class="toast-icon">✓</span><span id="toastMsg">Updated.</span></div>
+    <script src="supabase-config.js?v=20260721"></script>
+    <script src="script.js?v=20260721"></script>
+  </body>
+</html>

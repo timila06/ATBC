@@ -10,10 +10,28 @@ const oldShortPresidentStatement = "As of July 2026, M.L. Laksasubha Kridakon wi
 
 const roleAccounts = [
   { role: "admin", name: "ATBC Admin", email: "admin@atbc.org", password: "Admin@123" },
-  { role: "owner", name: "Website Owner", email: "owner@atbc.org", password: "Owner@123" },
-  { role: "updater", name: "Activity Updater", email: "activity@atbc.org", password: "Activity@123" },
   { role: "president", name: "President", email: "president@atbc.org", password: "President@123" }
 ];
+
+const tierRules = {
+  silver: { label: "Silver", updates: 3, windowDays: 30, price: "THB 12,000" },
+  gold: { label: "Gold", updates: 1, windowDays: 7, price: "THB 22,000" },
+  platinum: { label: "Platinum", updates: 2, windowDays: 7, price: "THB 35,000" }
+};
+
+let supabaseClient = null;
+
+async function initSupabase() {
+  const config = window.ATBC_SUPABASE || {};
+  if (!config.url || !config.anonKey) return null;
+  try {
+    const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+    supabaseClient = createClient(config.url, config.anonKey);
+    return supabaseClient;
+  } catch {
+    return null;
+  }
+}
 
 const defaultActivities = [
   {
@@ -68,6 +86,13 @@ function saveActivities(list) {
   localStorage.setItem("atbcActivities", JSON.stringify(list));
 }
 
+function deleteActivity(id) {
+  saveActivities(getActivities().filter((item) => item.id !== id));
+  renderActivitySlider();
+  renderActivityList();
+  showToast("Activity deleted.");
+}
+
 function getUsers() {
   const saved = localStorage.getItem("atbcUsers");
   return saved ? JSON.parse(saved) : [];
@@ -92,6 +117,15 @@ function addLoginLog(user) {
   localStorage.setItem("atbcLoginLog", JSON.stringify([entry, ...getLoginLog()].slice(0, 40)));
 }
 
+function getPromotions() {
+  const saved = localStorage.getItem("atbcPromotions");
+  return saved ? JSON.parse(saved) : [];
+}
+
+function savePromotions(list) {
+  localStorage.setItem("atbcPromotions", JSON.stringify(list));
+}
+
 function formatDate(value) {
   return new Intl.DateTimeFormat("en-AU", { day: "numeric", month: "short", year: "numeric" }).format(new Date(`${value}T00:00:00`));
 }
@@ -111,6 +145,7 @@ function activityCard(item, compact = false) {
       <h3><a href="${href}">${escapeHtml(item.title)}</a></h3>
       <p>${escapeHtml(item.summary)}</p>
       <a class="activity-read-more" href="${href}">Read update</a>
+      <button class="activity-delete-btn role-admin-only" type="button" data-delete-activity="${escapeHtml(item.id)}">Delete</button>
     </article>
   `;
 }
@@ -127,6 +162,10 @@ function renderActivityList() {
   if (!listEl) return;
   const list = getActivities().sort((a, b) => new Date(b.date) - new Date(a.date));
   listEl.innerHTML = list.map((item) => activityCard(item)).join("");
+  listEl.querySelectorAll("[data-delete-activity]").forEach((button) => {
+    button.addEventListener("click", () => deleteActivity(button.dataset.deleteActivity));
+  });
+  applyRoleAccess();
 }
 
 function setupActivityForm() {
@@ -147,6 +186,135 @@ function setupActivityForm() {
     renderActivitySlider();
     renderActivityList();
     showToast("Activity posted.");
+  });
+}
+
+function promotionLimitFor(role) {
+  return tierRules[role] || null;
+}
+
+function recentPromotionUpdates(promotion, rule) {
+  const since = Date.now() - rule.windowDays * 24 * 60 * 60 * 1000;
+  return (promotion.updateLog || []).filter((date) => new Date(date).getTime() >= since).length;
+}
+
+function renderPromotions() {
+  const publicList = document.getElementById("promotionPublicList");
+  const memberList = document.getElementById("memberPromotionList");
+  const approvalList = document.getElementById("promotionApprovalList");
+  const currentEmail = localStorage.getItem("atbcUserEmail") || "";
+  const role = localStorage.getItem("atbcRole") || "visitor";
+  const promotions = getPromotions();
+
+  if (publicList) {
+    const approved = promotions.filter((item) => item.status === "approved");
+    publicList.innerHTML = approved.length ? approved.map((item) => promotionCard(item)).join("") : `<p class="empty-state">No approved promotions are currently published.</p>`;
+  }
+
+  if (memberList) {
+    const mine = promotions.filter((item) => item.ownerEmail === currentEmail);
+    memberList.innerHTML = mine.length ? mine.map((item) => promotionCard(item, true)).join("") : `<p class="empty-state">No promotions submitted yet.</p>`;
+    memberList.querySelectorAll("[data-edit-promotion]").forEach((button) => {
+      button.addEventListener("click", () => loadPromotionForEdit(button.dataset.editPromotion));
+    });
+    memberList.querySelectorAll("[data-delete-promotion]").forEach((button) => {
+      button.addEventListener("click", () => {
+        savePromotions(getPromotions().filter((item) => item.id !== button.dataset.deletePromotion));
+        renderPromotions();
+        showToast("Promotion deleted.");
+      });
+    });
+  }
+
+  if (approvalList) {
+    const pending = promotions.filter((item) => item.status === "pending");
+    approvalList.innerHTML = pending.length ? pending.map((item) => promotionCard(item, false, true)).join("") : `<p class="empty-state">No promotions are awaiting approval.</p>`;
+    approvalList.querySelectorAll("[data-approve-promotion]").forEach((button) => {
+      button.addEventListener("click", () => {
+        savePromotions(getPromotions().map((item) => item.id === button.dataset.approvePromotion ? { ...item, status: "approved", approvedAt: new Date().toISOString() } : item));
+        renderPromotions();
+        showToast("Promotion approved.");
+      });
+    });
+    approvalList.querySelectorAll("[data-reject-promotion]").forEach((button) => {
+      button.addEventListener("click", () => {
+        savePromotions(getPromotions().map((item) => item.id === button.dataset.rejectPromotion ? { ...item, status: "rejected" } : item));
+        renderPromotions();
+        showToast("Promotion rejected.");
+      });
+    });
+  }
+
+  const limit = document.getElementById("promotionLimitText");
+  if (limit) {
+    const rule = promotionLimitFor(role);
+    limit.textContent = rule ? `${rule.label} members can update promotions ${rule.updates} time${rule.updates > 1 ? "s" : ""} every ${rule.windowDays === 7 ? "week" : "month"}.` : "";
+  }
+}
+
+function promotionCard(item, includeControls = false, includeApproval = false) {
+  return `
+    <article class="promotion-card">
+      <div class="activity-card-meta">
+        <span class="activity-badge">${escapeHtml(item.tier || "Member")}</span>
+        <span class="activity-date">${escapeHtml(item.status)}</span>
+      </div>
+      <h3>${escapeHtml(item.businessName)}</h3>
+      <p>${escapeHtml(item.description)}</p>
+      <a class="activity-read-more" href="${escapeHtml(item.website)}" target="_blank" rel="noreferrer noopener">${escapeHtml(item.offerTitle || "Visit business")}</a>
+      ${includeControls ? `<div class="promotion-actions"><button class="btn btn-outline-navy" data-edit-promotion="${escapeHtml(item.id)}" type="button">Edit</button><button class="btn btn-red" data-delete-promotion="${escapeHtml(item.id)}" type="button">Delete</button></div>` : ""}
+      ${includeApproval ? `<div class="promotion-actions"><button class="btn btn-primary" data-approve-promotion="${escapeHtml(item.id)}" type="button">Approve</button><button class="btn btn-outline-navy" data-reject-promotion="${escapeHtml(item.id)}" type="button">Reject</button></div>` : ""}
+    </article>
+  `;
+}
+
+function loadPromotionForEdit(id) {
+  const item = getPromotions().find((promotion) => promotion.id === id);
+  const form = document.getElementById("promotionForm");
+  if (!item || !form) return;
+  form.elements.promotionId.value = item.id;
+  form.elements.businessName.value = item.businessName;
+  form.elements.offerTitle.value = item.offerTitle;
+  form.elements.website.value = item.website;
+  form.elements.description.value = item.description;
+  form.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function setupPromotionForm() {
+  const form = document.getElementById("promotionForm");
+  if (!form) return;
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const role = localStorage.getItem("atbcRole") || "visitor";
+    const rule = promotionLimitFor(role);
+    if (!rule) {
+      showToast("Member access is required.");
+      return;
+    }
+    const data = Object.fromEntries(new FormData(form).entries());
+    const promotions = getPromotions();
+    const existing = data.promotionId ? promotions.find((item) => item.id === data.promotionId) : null;
+    const updateLog = existing?.updateLog || [];
+    if (existing && recentPromotionUpdates(existing, rule) >= rule.updates) {
+      showToast("Promotion update limit reached.");
+      return;
+    }
+    const item = {
+      id: existing?.id || `promotion-${Date.now()}`,
+      ownerEmail: localStorage.getItem("atbcUserEmail"),
+      ownerName: localStorage.getItem("atbcUserName"),
+      tier: rule.label,
+      businessName: data.businessName,
+      offerTitle: data.offerTitle,
+      website: data.website,
+      description: data.description,
+      status: "pending",
+      updateLog: [new Date().toISOString(), ...updateLog]
+    };
+    savePromotions(existing ? promotions.map((promotion) => promotion.id === existing.id ? item : promotion) : [item, ...promotions]);
+    form.reset();
+    renderPromotions();
+    showToast("Promotion submitted for approval.");
   });
 }
 
@@ -201,7 +369,7 @@ function applyRoleAccess() {
   const currentName = localStorage.getItem("atbcUserName") || "Visitor";
   document.body.dataset.role = role;
   document.querySelectorAll(".role-editor-only").forEach((el) => {
-    el.style.display = ["admin", "updater"].includes(role) ? "block" : "none";
+    el.style.display = role === "admin" ? "block" : "none";
   });
   document.querySelectorAll(".role-president-only").forEach((el) => {
     el.style.display = ["admin", "president"].includes(role) ? "block" : "none";
@@ -209,11 +377,8 @@ function applyRoleAccess() {
   document.querySelectorAll(".role-admin-only").forEach((el) => {
     el.style.display = role === "admin" ? "block" : "none";
   });
-  document.querySelectorAll(".role-updater-only").forEach((el) => {
-    el.style.display = ["admin", "updater"].includes(role) ? "block" : "none";
-  });
-  document.querySelectorAll(".role-owner-only").forEach((el) => {
-    el.style.display = ["admin", "owner"].includes(role) ? "block" : "none";
+  document.querySelectorAll(".role-member-only").forEach((el) => {
+    el.style.display = promotionLimitFor(role) ? "block" : "none";
   });
   document.querySelectorAll(".role-visitor-only").forEach((el) => {
     el.style.display = role === "visitor" ? "block" : "none";
@@ -223,7 +388,7 @@ function applyRoleAccess() {
   const title = document.getElementById("dashboardTitle");
   const intro = document.getElementById("dashboardIntro");
   if (title) title.textContent = `Welcome, ${currentName}.`;
-  if (intro) intro.textContent = `Current access role: ${role}.`;
+  if (intro) intro.textContent = `Current access: ${role}.`;
 }
 
 function setupAuthForms() {
@@ -247,7 +412,7 @@ function setupAuthForms() {
       localStorage.setItem("atbcUserName", user.name);
       localStorage.setItem("atbcUserEmail", user.email);
       addLoginLog(user);
-      window.location.href = "dashboard.html";
+      window.location.href = user.role === "president" ? "president.html" : "dashboard.html";
     });
   }
 
@@ -285,6 +450,40 @@ function setupAuthForms() {
       window.location.href = "login.html";
     });
   }
+}
+
+function setupMemberPaymentForm() {
+  const form = document.getElementById("memberPaymentForm");
+  if (!form) return;
+  const params = new URLSearchParams(window.location.search);
+  const selectedTier = (params.get("tier") || "silver").toLowerCase();
+  const tierInput = document.getElementById("selectedTier");
+  const tierTitle = document.getElementById("memberTierTitle");
+  const rule = tierRules[selectedTier] || tierRules.silver;
+  if (tierInput) tierInput.value = selectedTier;
+  if (tierTitle) tierTitle.textContent = `${rule.label} Membership`;
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    const email = data.email.trim().toLowerCase();
+    const users = getUsers().filter((user) => user.email !== email);
+    const user = {
+      role: data.tier,
+      name: data.name.trim(),
+      email,
+      password: data.password,
+      businessName: data.businessName,
+      paymentMethod: data.paymentMethod,
+      registeredAt: new Date().toISOString(),
+      paidAt: new Date().toISOString()
+    };
+    saveUsers([user, ...users]);
+    localStorage.setItem("atbcRole", user.role);
+    localStorage.setItem("atbcUserName", user.name);
+    localStorage.setItem("atbcUserEmail", user.email);
+    addLoginLog(user);
+    window.location.href = "promotion.html";
+  });
 }
 
 function renderUserRegistry() {
@@ -348,16 +547,21 @@ window.addEventListener("scroll", () => {
 
 setupMenu();
 setupReveal();
-renderActivitySlider();
-renderActivityList();
-setupActivityForm();
-setupSliderButtons();
-seedAssignedAccounts();
-setupAuthForms();
-setupContactForm();
-applyRoleAccess();
-renderPresidentStatement();
-setupStatementForms();
-renderUserRegistry();
-updateHeader();
-updateProgress();
+initSupabase().finally(() => {
+  renderActivitySlider();
+  renderActivityList();
+  setupActivityForm();
+  setupSliderButtons();
+  seedAssignedAccounts();
+  setupAuthForms();
+  setupMemberPaymentForm();
+  setupPromotionForm();
+  setupContactForm();
+  applyRoleAccess();
+  renderPresidentStatement();
+  setupStatementForms();
+  renderUserRegistry();
+  renderPromotions();
+  updateHeader();
+  updateProgress();
+});
