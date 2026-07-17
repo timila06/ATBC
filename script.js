@@ -14,9 +14,12 @@ const roleAccounts = [
 ];
 
 const tierRules = {
-  silver: { label: "Silver", updates: 3, windowDays: 30, price: "THB 12,000" },
-  gold: { label: "Gold", updates: 1, windowDays: 7, price: "THB 22,000" },
-  platinum: { label: "Platinum", updates: 2, windowDays: 7, price: "THB 35,000" }
+  "individual-ordinary": { label: "Individual Ordinary", updates: 0, windowDays: 30, price: 3500, slots: 1, type: "individual" },
+  "individual-affiliate": { label: "Individual Affiliate", updates: 0, windowDays: 30, price: 2500, slots: 1, type: "individual" },
+  silver: { label: "Silver", updates: 3, windowDays: 30, price: 12000, slots: 3, type: "business" },
+  gold: { label: "Gold", updates: 1, windowDays: 7, price: 22000, slots: 6, type: "business" },
+  platinum: { label: "Platinum", updates: 2, windowDays: 7, price: 35000, slots: 10, type: "business" },
+  custom: { label: "Custom", updates: 2, windowDays: 7, price: 0, slots: 10, type: "business" }
 };
 
 let supabaseClient = null;
@@ -462,18 +465,27 @@ function setupMemberPaymentForm() {
   const rule = tierRules[selectedTier] || tierRules.silver;
   if (tierInput) tierInput.value = selectedTier;
   if (tierTitle) tierTitle.textContent = `${rule.label} Membership`;
+  renderMembershipApplication(rule);
+  form.querySelectorAll('input[name="duration"]').forEach((input) => {
+    input.addEventListener("change", () => renderMembershipApplication(rule));
+  });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(form).entries());
     const email = data.email.trim().toLowerCase();
+    const isPromotionMember = ["silver", "gold", "platinum"].includes(data.tier);
     const users = getUsers().filter((user) => user.email !== email);
     const user = {
-      role: data.tier,
-      name: data.name.trim(),
+      role: isPromotionMember ? data.tier : "visitor",
+      tier: data.tier,
+      name: `${data.name.trim()} ${data.lastName?.trim() || ""}`.trim(),
       email,
       password: data.password,
       businessName: data.businessName,
       paymentMethod: data.paymentMethod,
+      billingCompany: data.billingCompany,
+      taxId: data.taxId,
+      duration: data.duration,
       registeredAt: new Date().toISOString(),
       paidAt: new Date().toISOString()
     };
@@ -482,8 +494,53 @@ function setupMemberPaymentForm() {
     localStorage.setItem("atbcUserName", user.name);
     localStorage.setItem("atbcUserEmail", user.email);
     addLoginLog(user);
-    window.location.href = "promotion.html";
+    window.location.href = isPromotionMember ? "promotion.html" : "dashboard.html";
   });
+}
+
+function formatBaht(value) {
+  return new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB", maximumFractionDigits: 2 }).format(value || 0);
+}
+
+function membershipTotals(rule) {
+  const duration = Number(document.querySelector('input[name="duration"]:checked')?.value || 1);
+  const discounts = { 1: 0, 2: 0.1, 3: 0.15 };
+  const annual = rule.price || 0;
+  const subtotal = annual * duration * (1 - discounts[duration]);
+  const applicationFee = rule.price ? 3000 : 0;
+  const tax = (subtotal + applicationFee) * 0.07;
+  const total = subtotal + applicationFee + tax;
+  return { duration, subtotal, applicationFee, tax, total, annualDiscounted: annual * (1 - discounts[duration]) };
+}
+
+function renderMembershipApplication(rule) {
+  const totals = membershipTotals(rule);
+  const tierName = document.getElementById("applicationTierName");
+  const durationText = document.getElementById("applicationDuration");
+  const slots = document.getElementById("applicationSlots");
+  const desc = document.getElementById("applicationDescription");
+  const unitPrice = document.getElementById("unitPrice");
+  const lineTotal = document.getElementById("lineTotal");
+  const fee = document.getElementById("applicationFee");
+  const tax = document.getElementById("taxTotal");
+  const balance = document.getElementById("balanceTotal");
+  const title = document.getElementById("memberTierTitle");
+  if (tierName) tierName.textContent = `${rule.label} Membership`;
+  if (title) title.textContent = `${rule.label} Membership`;
+  if (durationText) durationText.textContent = `This is a ${totals.duration * 12}-month membership`;
+  if (slots) slots.textContent = `This membership includes ${rule.slots} member slot(s)`;
+  if (desc) desc.textContent = rule.type === "individual" ? "Individual membership for professionals connected to Australia-Thailand business." : "Business membership with ATBC network access and member promotion privileges.";
+  if (unitPrice) unitPrice.textContent = rule.price ? formatBaht(rule.price) : "Custom";
+  if (lineTotal) lineTotal.textContent = rule.price ? formatBaht(totals.subtotal) : "Quoted";
+  if (fee) fee.textContent = rule.price ? formatBaht(totals.applicationFee) : "Quoted";
+  if (tax) tax.textContent = rule.price ? formatBaht(totals.tax) : "Quoted";
+  if (balance) balance.textContent = rule.price ? formatBaht(totals.total) : "Contact ATBC";
+  const one = document.getElementById("durationOne");
+  const two = document.getElementById("durationTwo");
+  const three = document.getElementById("durationThree");
+  if (one) one.textContent = rule.price ? formatBaht(rule.price) : "Custom";
+  if (two) two.textContent = rule.price ? formatBaht(rule.price * 2 * 0.9) : "Custom";
+  if (three) three.textContent = rule.price ? formatBaht(rule.price * 3 * 0.85) : "Custom";
 }
 
 function renderUserRegistry() {

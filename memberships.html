@@ -1,13 +1,40 @@
 <!doctype html>
 <html lang="en">
-  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Memberships | ATBC</title><link rel="stylesheet" href="styles.css?v=20260721" /><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" /></head>
-  <body><header class="site-header scrolled" id="siteHeader"><a class="brand" href="index.html"><span class="brand-name">Australia Thailand Business Council</span></a><button class="menu-toggle" id="menuToggle" type="button"><span></span><span></span><span></span></button><nav class="main-nav" id="mainNav"><a href="index.html">Home</a><a href="about.html">About Us</a><a href="memberships.html" class="is-active">Memberships</a><a href="sponsors.html">Sponsor</a><a href="mission.html">Mission</a><a href="promotion.html">Promotion</a><a href="board-members.html">Board Members</a><a href="activity.html">Activity</a><a href="login.html">Login</a><a href="contact.html" class="nav-cta">Contact</a></nav></header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memberships | ATBC</title>
+    <link rel="stylesheet" href="styles.css?v=20260722" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-header scrolled" id="siteHeader"><a class="brand" href="index.html"><span class="brand-name">Australia Thailand Business Council</span></a><button class="menu-toggle" id="menuToggle" type="button"><span></span><span></span><span></span></button><nav class="main-nav" id="mainNav"><a href="index.html">Home</a><a href="about.html">About Us</a><a href="memberships.html" class="is-active">Memberships</a><a href="sponsors.html">Sponsor</a><a href="mission.html">Mission</a><a href="promotion.html">Promotion</a><a href="board-members.html">Board Members</a><a href="activity.html">Activity</a><a href="login.html">Login</a><a href="contact.html" class="nav-cta">Contact</a></nav></header>
     <main class="page-main">
-      <section class="page-hero"><div class="section-inner"><p class="eyebrow">Memberships</p><h1>Choose the access level that fits your organisation.</h1><p>Paid member tiers unlock business promotion access and visibility pathways across the ATBC network.</p></div></section>
-      <section class="content-page-block"><div class="section-inner membership-grid">
-        <article id="silver" class="membership-card individual"><span class="membership-type-tag">Silver</span><div class="membership-price">Silver</div><p class="membership-desc">Entry-level promotion access for approved members.</p><ul class="membership-benefits"><li>Promotion submission access</li><li>Three promotion updates per month</li><li>Admin-approved public listing</li><li>Member visibility across ATBC channels</li></ul><a class="btn btn-outline-navy" href="member-register.html?tier=silver">Register Silver</a></article>
-        <article id="gold" class="membership-card organisation featured"><span class="membership-type-tag">Gold</span><div class="membership-price">Gold</div><p class="membership-desc">Enhanced promotion access for active business members.</p><ul class="membership-benefits"><li>Promotion submission access</li><li>One promotion update per week</li><li>Admin-approved public listing</li><li>Priority member visibility</li></ul><a class="btn btn-gold" href="member-register.html?tier=gold">Register Gold</a></article>
-        <article id="platinum" class="membership-card sponsor-path"><span class="membership-type-tag">Platinum</span><div class="membership-price">Platinum</div><p class="membership-desc">Premium promotion access for senior partner members.</p><ul class="membership-benefits"><li>Promotion submission access</li><li>Two promotion updates per week</li><li>Admin-approved public listing</li><li>Highest member visibility pathway</li></ul><a class="btn btn-primary" href="member-register.html?tier=platinum">Register Platinum</a></article>
-      </div></section>
-    </main><script src="supabase-config.js?v=20260721"></script><script src="script.js?v=20260721"></script></body>
+      <section class="page-hero"><div class="section-inner"><p class="eyebrow">Memberships</p><h1>Choose your ATBC membership tier.</h1><p>Select a business or individual membership and continue through the application process.</p></div></section>
+      <section class="content-page-block membership-tier-page">
+        <div class="section-inner">
+          <div class="membership-tier-header">
+            <p class="eyebrow">Business membership</p>
+            <h2>Corporate and sponsor-style membership access.</h2>
+          </div>
+          <div class="tier-catalogue-grid">
+            <article class="tier-catalogue-card custom-tier"><span>Custom</span><h3>Custom Membership</h3><p>Tailored package for major partners, sponsors, and strategic member organisations.</p><strong>Custom</strong><ul><li>Custom member slots</li><li>Custom promotion visibility</li><li>Strategic collaboration pathway</li></ul><a class="btn btn-primary" href="member-register.html?tier=custom">Become a member</a></article>
+            <article class="tier-catalogue-card"><span>Silver</span><h3>Silver Membership</h3><p>Entry-level business visibility and member promotion access.</p><strong>฿12,000</strong><ul><li>3 member slots</li><li>3 promotion updates per month</li><li>Admin-approved promotion listing</li></ul><a class="btn btn-outline-navy" href="member-register.html?tier=silver">Become a member</a></article>
+            <article class="tier-catalogue-card highlighted"><span>Gold</span><h3>Gold Membership</h3><p>Enhanced visibility for active bilateral business members.</p><strong>฿22,000</strong><ul><li>6 member slots</li><li>1 promotion update per week</li><li>Priority promotion visibility</li></ul><a class="btn btn-gold" href="member-register.html?tier=gold">Become a member</a></article>
+            <article class="tier-catalogue-card dark-tier"><span>Platinum</span><h3>Platinum Membership</h3><p>Premium membership for senior partners and leading member businesses.</p><strong>฿35,000</strong><ul><li>10 member slots</li><li>2 promotion updates per week</li><li>Highest promotion pathway</li></ul><a class="btn btn-gold" href="member-register.html?tier=platinum">Become a member</a></article>
+          </div>
+
+          <div class="membership-tier-header individual-header">
+            <p class="eyebrow">Individual membership</p>
+            <h2>Individual Ordinary and Affiliate memberships.</h2>
+          </div>
+          <div class="tier-catalogue-grid individual-tier-grid">
+            <article class="tier-catalogue-card"><span>Individual</span><h3>Individual Ordinary</h3><p>For professionals participating directly in ATBC business and council activity.</p><strong>฿3,500</strong><ul><li>12-month membership</li><li>Individual member access</li><li>Networking and event access</li></ul><a class="btn btn-outline-navy" href="member-register.html?tier=individual-ordinary">Become a member</a></article>
+            <article class="tier-catalogue-card"><span>Affiliate</span><h3>Individual Affiliate</h3><p>For affiliated professionals, alumni, students, and community participants.</p><strong>฿2,500</strong><ul><li>12-month membership</li><li>Affiliate member access</li><li>Selected ATBC activity access</li></ul><a class="btn btn-outline-navy" href="member-register.html?tier=individual-affiliate">Become a member</a></article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="supabase-config.js?v=20260722"></script><script src="script.js?v=20260722"></script>
+  </body>
 </html>

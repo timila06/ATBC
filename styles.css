@@ -2310,10 +2310,340 @@ footer {
   display: none;
 }
 
+.membership-tier-page {
+  background: #f2f3f5;
+}
+
+.membership-tier-header {
+  max-width: 760px;
+  margin-bottom: 28px;
+}
+
+.membership-tier-header h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: var(--navy);
+  font-size: clamp(30px, 5vw, 50px);
+  line-height: 1.1;
+}
+
+.individual-header {
+  margin-top: 70px;
+}
+
+.tier-catalogue-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.individual-tier-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tier-catalogue-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  min-height: 430px;
+}
+
+.tier-catalogue-card span {
+  align-self: flex-start;
+  background: #edf3fb;
+  color: var(--navy);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.tier-catalogue-card h3 {
+  color: var(--navy);
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.tier-catalogue-card p,
+.tier-catalogue-card li {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.tier-catalogue-card strong {
+  display: block;
+  color: var(--navy);
+  font-size: 34px;
+  margin: 20px 0;
+}
+
+.tier-catalogue-card ul {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex: 1;
+}
+
+.tier-catalogue-card li::before {
+  content: "✓";
+  color: var(--gold);
+  margin-right: 8px;
+}
+
+.tier-catalogue-card.highlighted {
+  border-color: rgba(184,137,58,.45);
+}
+
+.dark-tier,
+.custom-tier {
+  background: linear-gradient(145deg, var(--navy), var(--navy-mid));
+  color: var(--white);
+}
+
+.dark-tier h3,
+.dark-tier strong,
+.custom-tier h3,
+.custom-tier strong {
+  color: var(--white);
+}
+
+.dark-tier p,
+.dark-tier li,
+.custom-tier p,
+.custom-tier li {
+  color: rgba(255,255,255,.72);
+}
+
+.application-body {
+  background: #f1f1f2;
+}
+
+.application-header {
+  height: 86px;
+  background: var(--white);
+  border-top: 8px solid var(--navy);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(22px, 5vw, 72px);
+  box-shadow: var(--shadow-sm);
+}
+
+.application-logo {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: var(--muted);
+}
+
+.application-logo img {
+  width: 86px;
+  height: auto;
+}
+
+.application-header strong {
+  color: var(--navy);
+  font-size: 20px;
+}
+
+.application-main {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 34px clamp(18px, 4vw, 70px) 70px;
+}
+
+.application-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 34px;
+  counter-reset: step;
+}
+
+.application-stepper li {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.application-stepper li::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 42px;
+  right: -24px;
+  height: 1px;
+  background: #adb3bd;
+}
+
+.application-stepper li:last-child::before {
+  display: none;
+}
+
+.application-stepper span {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #f8f8f8;
+  border: 1px solid #222;
+  color: var(--navy);
+}
+
+.application-stepper .is-complete span {
+  color: #219653;
+  font-size: 22px;
+}
+
+.application-stepper .is-active strong {
+  color: var(--navy);
+}
+
+.membership-application-form {
+  display: grid;
+  gap: 28px;
+}
+
+.application-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.application-card h2 {
+  color: var(--navy);
+  font-size: 24px;
+  margin-bottom: 22px;
+}
+
+.application-table {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.application-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px 190px;
+  gap: 18px;
+  align-items: start;
+  padding: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.application-row:last-child {
+  border-bottom: 0;
+}
+
+.application-row h2 {
+  margin-bottom: 12px;
+}
+
+.application-row p {
+  color: var(--ink);
+  line-height: 1.55;
+  margin: 7px 0;
+}
+
+.application-head {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.duration-box {
+  padding: 22px 0 0;
+}
+
+.duration-box h3 {
+  color: var(--navy);
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+
+.duration-box label {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.duration-box small {
+  color: #f28a2e;
+  margin-left: 8px;
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 22px 0 0;
+  font-size: 22px;
+  color: var(--navy);
+}
+
+.application-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.application-grid .full {
+  grid-column: 1 / -1;
+}
+
+.billing-choice {
+  display: grid;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.billing-choice label {
+  padding: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+
+.billing-choice label:last-child {
+  border-bottom: 0;
+}
+
+.application-submit-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  position: sticky;
+  bottom: 0;
+  background: rgba(241,241,242,.94);
+  padding: 18px 0;
+  backdrop-filter: blur(10px);
+}
+
 @media (max-width: 900px) {
   .home-two-card,
   .login-grid,
   .membership-home-grid,
+  .tier-catalogue-grid,
+  .individual-tier-grid,
   .auth-layout,
   .dashboard-grid,
   .mission-detail-grid,
@@ -2323,6 +2653,23 @@ footer {
 
   .promotion-panel {
     position: static;
+  }
+
+  .application-stepper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .application-stepper li::before {
+    display: none;
+  }
+
+  .application-row,
+  .application-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .application-grid .full {
+    grid-column: auto;
   }
 
   .activity-slider-shell {
