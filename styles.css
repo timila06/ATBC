@@ -1988,27 +1988,6 @@ footer {
   gap: 18px;
 }
 
-.role-card {
-  text-align: left;
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 28px;
-  box-shadow: var(--shadow-sm);
-}
-
-.role-card strong,
-.role-card span {
-  display: block;
-}
-
-.role-card strong {
-  color: var(--navy);
-  font-size: 20px;
-  margin-bottom: 8px;
-}
-
-.role-card span,
 .role-status {
   color: var(--muted);
 }
@@ -2022,9 +2001,231 @@ footer {
   background: var(--navy);
 }
 
+.membership-home-grid {
+  grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
+}
+
+.membership-home-grid .membership-card {
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+}
+
+.membership-home-grid .membership-benefits {
+  margin: 28px 0 32px;
+  flex: 1;
+}
+
+.membership-home-grid .btn {
+  align-self: flex-start;
+}
+
+.custom-price {
+  font-size: 38px;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.auth-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  align-items: start;
+}
+
+.auth-card,
+.dashboard-card,
+.auth-management-note {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: clamp(28px, 4vw, 42px);
+  box-shadow: var(--shadow-sm);
+}
+
+.auth-card-muted {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.94), rgba(245,246,247,.98)),
+    url("assets/thailand-temple.jpg") center/cover;
+}
+
+.auth-card h2,
+.dashboard-card h2,
+.auth-management-note h3,
+.mission-detail-header h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: var(--navy);
+  line-height: 1.1;
+}
+
+.auth-card h2 {
+  font-size: clamp(28px, 4vw, 42px);
+  margin-bottom: 22px;
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-note {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.auth-management-note {
+  margin-top: 28px;
+}
+
+.auth-management-note p {
+  margin-top: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.dashboard-card h2 {
+  font-size: 30px;
+  margin-bottom: 12px;
+}
+
+.dashboard-card p {
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 22px;
+}
+
+.data-panel {
+  display: grid;
+  gap: 26px;
+}
+
+.data-panel h3 {
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+
+.data-table {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.data-table div,
+.data-table p {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr auto;
+  gap: 14px;
+  background: var(--white);
+  padding: 14px 16px;
+  margin: 0;
+}
+
+.data-table span {
+  color: var(--muted);
+}
+
+.data-table em {
+  color: var(--gold);
+  font-style: normal;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.mission-page-hero {
+  background:
+    linear-gradient(135deg, rgba(13,31,56,.9), rgba(181,37,53,.58)),
+    url("assets/thailand-temple.jpg") center/cover;
+}
+
+.mission-page-block {
+  background:
+    linear-gradient(135deg, rgba(13,31,56,.94), rgba(13,31,56,.88)),
+    url("assets/australia-harbour.jpg") center/cover;
+}
+
+.mission-page-grid {
+  margin-bottom: 0;
+}
+
+.mission-details-block {
+  background: var(--white);
+}
+
+.mission-detail-header {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 46px;
+}
+
+.mission-detail-header h2 {
+  font-size: clamp(32px, 5vw, 52px);
+  margin-bottom: 14px;
+}
+
+.mission-detail-header p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.mission-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.mission-detail-grid article {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 32px;
+  background: var(--paper);
+}
+
+.mission-detail-grid span {
+  display: block;
+  font-family: 'Playfair Display', Georgia, serif;
+  color: var(--gold);
+  font-size: 34px;
+  font-weight: 900;
+  margin-bottom: 14px;
+}
+
+.mission-detail-grid h3 {
+  color: var(--navy);
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.mission-detail-grid p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.role-admin-only,
+.role-updater-only,
+.role-president-only,
+.role-owner-only,
+.role-visitor-only {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .home-two-card,
-  .login-grid {
+  .login-grid,
+  .membership-home-grid,
+  .auth-layout,
+  .dashboard-grid,
+  .mission-detail-grid {
     grid-template-columns: 1fr;
   }
 

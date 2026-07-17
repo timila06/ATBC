@@ -5,6 +5,16 @@ const navProgress = document.getElementById("navProgress");
 const toast = document.getElementById("toast");
 const toastMsg = document.getElementById("toastMsg");
 
+const defaultPresidentStatement = "As of July 2026, M.L. Laksasubha Kridakon will assume the role of President of the Australia Thailand Business Council (ATBC). M.L. Laksasubha brings extensive leadership experience, having served as President of the Australian Alumni Association (Thailand) for the past 10 years and as a Board Director of the Australian-Thai Chamber of Commerce (AustCham Thailand) for more than 16 years. She also made history as the first Thai female President of AustCham Thailand. In addition to her leadership roles, she is a successful business owner with interests spanning the hospitality and hotel sector, international education, training and consultancy services, and real estate development. Under her leadership, ATBC is expected to further strengthen economic, trade, and investment ties between Australia and Thailand. Working closely with key organisations such as the Thai Board of Investment (BOI), the Board of Trade of Thailand, the Thai Chamber of Commerce, and various government agencies, she will actively promote bilateral trade, investment, and business development opportunities between the two countries.";
+const oldShortPresidentStatement = "As of July 2026, M.L. Laksasubha Kridakon will assume the role of President. Under her leadership, ATBC is expected to further strengthen economic, trade, and investment ties between Australia and Thailand.";
+
+const roleAccounts = [
+  { role: "admin", name: "ATBC Admin", email: "admin@atbc.org", password: "Admin@123" },
+  { role: "owner", name: "Website Owner", email: "owner@atbc.org", password: "Owner@123" },
+  { role: "updater", name: "Activity Updater", email: "activity@atbc.org", password: "Activity@123" },
+  { role: "president", name: "President", email: "president@atbc.org", password: "President@123" }
+];
+
 const defaultActivities = [
   {
     id: "trade-outlook-briefing",
@@ -56,6 +66,30 @@ function getActivities() {
 
 function saveActivities(list) {
   localStorage.setItem("atbcActivities", JSON.stringify(list));
+}
+
+function getUsers() {
+  const saved = localStorage.getItem("atbcUsers");
+  return saved ? JSON.parse(saved) : [];
+}
+
+function saveUsers(users) {
+  localStorage.setItem("atbcUsers", JSON.stringify(users));
+}
+
+function getLoginLog() {
+  const saved = localStorage.getItem("atbcLoginLog");
+  return saved ? JSON.parse(saved) : [];
+}
+
+function addLoginLog(user) {
+  const entry = {
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    time: new Date().toISOString()
+  };
+  localStorage.setItem("atbcLoginLog", JSON.stringify([entry, ...getLoginLog()].slice(0, 40)));
 }
 
 function formatDate(value) {
@@ -116,6 +150,43 @@ function setupActivityForm() {
   });
 }
 
+function getPresidentStatement() {
+  const saved = localStorage.getItem("atbcPresidentStatement");
+  if (!saved || saved === oldShortPresidentStatement) {
+    localStorage.setItem("atbcPresidentStatement", defaultPresidentStatement);
+    return defaultPresidentStatement;
+  }
+  return saved;
+}
+
+function savePresidentStatement(value) {
+  localStorage.setItem("atbcPresidentStatement", value);
+}
+
+function renderPresidentStatement() {
+  const statement = getPresidentStatement();
+  const statementEl = document.getElementById("presidentStatement");
+  const statementInput = document.getElementById("statementText");
+  const dashboardInput = document.getElementById("dashboardStatementText");
+  if (statementEl) statementEl.textContent = statement;
+  if (statementInput) statementInput.value = statement;
+  if (dashboardInput) dashboardInput.value = statement;
+}
+
+function setupStatementForms() {
+  ["statementForm", "dashboardStatementForm"].forEach((id) => {
+    const form = document.getElementById(id);
+    if (!form) return;
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      savePresidentStatement(data.statement);
+      renderPresidentStatement();
+      showToast("President statement updated.");
+    });
+  });
+}
+
 function setupSliderButtons() {
   const slider = document.getElementById("activitySlider");
   const prev = document.getElementById("activityPrev");
@@ -127,22 +198,115 @@ function setupSliderButtons() {
 
 function applyRoleAccess() {
   const role = localStorage.getItem("atbcRole") || "visitor";
+  const currentName = localStorage.getItem("atbcUserName") || "Visitor";
   document.body.dataset.role = role;
   document.querySelectorAll(".role-editor-only").forEach((el) => {
-    el.style.display = ["admin", "updater"].includes(role) ? "" : "none";
+    el.style.display = ["admin", "updater"].includes(role) ? "block" : "none";
+  });
+  document.querySelectorAll(".role-president-only").forEach((el) => {
+    el.style.display = ["admin", "president"].includes(role) ? "block" : "none";
+  });
+  document.querySelectorAll(".role-admin-only").forEach((el) => {
+    el.style.display = role === "admin" ? "block" : "none";
+  });
+  document.querySelectorAll(".role-updater-only").forEach((el) => {
+    el.style.display = ["admin", "updater"].includes(role) ? "block" : "none";
+  });
+  document.querySelectorAll(".role-owner-only").forEach((el) => {
+    el.style.display = ["admin", "owner"].includes(role) ? "block" : "none";
+  });
+  document.querySelectorAll(".role-visitor-only").forEach((el) => {
+    el.style.display = role === "visitor" ? "block" : "none";
   });
   const status = document.getElementById("roleStatus");
   if (status) status.innerHTML = role === "visitor" ? "Current role: Visitor" : `Current role: ${role}`;
+  const title = document.getElementById("dashboardTitle");
+  const intro = document.getElementById("dashboardIntro");
+  if (title) title.textContent = `Welcome, ${currentName}.`;
+  if (intro) intro.textContent = `Current access role: ${role}.`;
 }
 
-function setupLoginRoles() {
-  document.querySelectorAll(".role-card").forEach((card) => {
-    card.addEventListener("click", () => {
-      localStorage.setItem("atbcRole", card.dataset.role);
-      applyRoleAccess();
-      showToast(`Logged in as ${card.dataset.role}.`);
+function setupAuthForms() {
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (loginForm) {
+    loginForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(loginForm).entries());
+      const email = data.email.trim().toLowerCase();
+      const assigned = roleAccounts.find((account) => account.email === email && account.password === data.password);
+      const visitor = getUsers().find((user) => user.email === email && user.password === data.password);
+      const user = assigned || visitor;
+      if (!user) {
+        showToast("Login details do not match.");
+        return;
+      }
+      localStorage.setItem("atbcRole", user.role);
+      localStorage.setItem("atbcUserName", user.name);
+      localStorage.setItem("atbcUserEmail", user.email);
+      addLoginLog(user);
+      window.location.href = "dashboard.html";
     });
-  });
+  }
+
+  if (registerForm) {
+    registerForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(registerForm).entries());
+      const email = data.email.trim().toLowerCase();
+      const users = getUsers();
+      if (roleAccounts.some((account) => account.email === email) || users.some((user) => user.email === email)) {
+        showToast("This email is already registered.");
+        return;
+      }
+      const user = {
+        role: "visitor",
+        name: data.name.trim(),
+        email,
+        password: data.password,
+        registeredAt: new Date().toISOString()
+      };
+      saveUsers([user, ...users]);
+      localStorage.setItem("atbcRole", "visitor");
+      localStorage.setItem("atbcUserName", user.name);
+      localStorage.setItem("atbcUserEmail", user.email);
+      addLoginLog(user);
+      window.location.href = "dashboard.html";
+    });
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("atbcRole");
+      localStorage.removeItem("atbcUserName");
+      localStorage.removeItem("atbcUserEmail");
+      window.location.href = "login.html";
+    });
+  }
+}
+
+function renderUserRegistry() {
+  const registry = document.getElementById("userRegistry");
+  if (!registry) return;
+  const users = [...roleAccounts.map(({ password, ...account }) => ({ ...account, registeredAt: "Assigned account" })), ...getUsers()];
+  const log = getLoginLog();
+  registry.innerHTML = `
+    <h3>Registered accounts</h3>
+    <div class="data-table">
+      ${users.map((user) => `<div><strong>${escapeHtml(user.name)}</strong><span>${escapeHtml(user.email)}</span><em>${escapeHtml(user.role)}</em></div>`).join("")}
+    </div>
+    <h3>Recent logins</h3>
+    <div class="data-table">
+      ${log.length ? log.map((entry) => `<div><strong>${escapeHtml(entry.name)}</strong><span>${escapeHtml(entry.email)}</span><em>${formatDate(entry.time.slice(0, 10))}</em></div>`).join("") : "<p>No login records yet.</p>"}
+    </div>
+  `;
+}
+
+function seedAssignedAccounts() {
+  if (localStorage.getItem("atbcAssignedAccountsSeeded")) return;
+  localStorage.setItem("atbcAssignedAccountsSeeded", "true");
 }
 
 function setupContactForm() {
@@ -188,8 +352,12 @@ renderActivitySlider();
 renderActivityList();
 setupActivityForm();
 setupSliderButtons();
-setupLoginRoles();
+seedAssignedAccounts();
+setupAuthForms();
 setupContactForm();
 applyRoleAccess();
+renderPresidentStatement();
+setupStatementForms();
+renderUserRegistry();
 updateHeader();
 updateProgress();
