@@ -1908,6 +1908,24 @@ footer {
   color: var(--white);
 }
 
+.mission-home .mv-card {
+  background: rgba(255,255,255,.94);
+  border-color: rgba(13,31,56,.12);
+  box-shadow: var(--shadow-sm);
+}
+
+.mission-home .mv-card:hover {
+  background: var(--white);
+}
+
+.mission-home .mv-card h2 {
+  color: var(--navy);
+}
+
+.mission-home .mv-card p {
+  color: var(--muted);
+}
+
 .contact-strip {
   background:
     linear-gradient(135deg, rgba(13,31,56,.95), rgba(28,79,138,.84)),
