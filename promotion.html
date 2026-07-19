@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Promotion | ATBC</title>
-    <link rel="stylesheet" href="styles.css?v=20260723" />
+    <link rel="stylesheet" href="styles.css?v=20260724" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   </head>
   <body>
@@ -30,7 +30,7 @@
         <div class="section-inner">
           <p class="eyebrow">Promotion</p>
           <h1>Member business promotions.</h1>
-          <p>Approved Silver, Gold, and Platinum members can submit business promotions for publication after admin approval.</p>
+          <p>Explore announcements, offers, and updates shared by ATBC member businesses.</p>
         </div>
       </section>
 
@@ -39,7 +39,7 @@
           <div>
             <div class="promotion-section-header">
               <p class="eyebrow">Published promotions</p>
-              <h2>Approved member offers and announcements.</h2>
+              <h2>Promotions and Announcements from Our Members</h2>
             </div>
             <div class="promotion-grid" id="promotionPublicList"></div>
           </div>
@@ -62,8 +62,16 @@
                 <input id="promotionWebsite" name="website" type="url" required />
               </div>
               <div class="form-group">
-                <label for="promotionDescription">Description</label>
+                <label for="promotionImage">Image URL</label>
+                <input id="promotionImage" name="image" type="url" placeholder="https://..." />
+              </div>
+              <div class="form-group">
+                <label for="promotionDescription">Short description</label>
                 <textarea id="promotionDescription" name="description" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="promotionDetails">Additional details</label>
+                <textarea id="promotionDetails" name="details"></textarea>
               </div>
               <button class="btn btn-primary" type="submit">Submit for approval</button>
             </form>
@@ -82,7 +90,7 @@
       </section>
     </main>
     <div class="toast" id="toast"><span class="toast-icon">OK</span><span id="toastMsg">Updated.</span></div>
-    <script src="supabase-config.js?v=20260723"></script>
-    <script src="script.js?v=20260723"></script>
+    <script src="supabase-config.js?v=20260724"></script>
+    <script src="script.js?v=20260724"></script>
   </body>
 </html>

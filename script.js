@@ -91,6 +91,12 @@ function saveActivities(list) {
 }
 
 function deleteActivity(id) {
+  const { role } = getCurrentUser();
+  const isLoggedIn = Boolean(localStorage.getItem("atbcUserEmail"));
+  if (!isLoggedIn || !["admin", "president"].includes(role)) {
+    showToast("Authorized access is required.");
+    return;
+  }
   saveActivities(getActivities().filter((item) => item.id !== id));
   renderActivitySlider();
   renderActivityList();
@@ -156,6 +162,17 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 }
 
+function mediaMarkup(item) {
+  const image = item.image || item.imageUrl;
+  const detail = item.details || item.longDescription;
+  const link = item.link;
+  return `
+    ${image ? `<img class="content-card-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.title || item.offerTitle || item.businessName || "ATBC update")}" />` : ""}
+    ${detail ? `<p class="content-card-detail">${escapeHtml(detail)}</p>` : ""}
+    ${link ? `<a class="activity-read-more" href="${escapeHtml(link)}" target="_blank" rel="noreferrer noopener">Open link</a>` : ""}
+  `;
+}
+
 function activityCard(item, compact = false) {
   const href = `activity.html#${item.id}`;
   return `
@@ -166,8 +183,9 @@ function activityCard(item, compact = false) {
       </div>
       <h3><a href="${href}">${escapeHtml(item.title)}</a></h3>
       <p>${escapeHtml(item.summary)}</p>
+      ${mediaMarkup(item)}
       <a class="activity-read-more" href="${href}">Read update</a>
-      <button class="activity-delete-btn role-admin-only" type="button" data-delete-activity="${escapeHtml(item.id)}">Delete</button>
+      <button class="activity-delete-btn role-president-only" type="button" data-delete-activity="${escapeHtml(item.id)}">Delete</button>
     </article>
   `;
 }
@@ -195,13 +213,22 @@ function setupActivityForm() {
   if (!form) return;
   form.addEventListener("submit", (event) => {
     event.preventDefault();
+    const role = localStorage.getItem("atbcRole") || "visitor";
+    const isLoggedIn = Boolean(localStorage.getItem("atbcUserEmail"));
+    if (!isLoggedIn || !["admin", "president"].includes(role)) {
+      showToast("Authorized access is required.");
+      return;
+    }
     const data = Object.fromEntries(new FormData(form).entries());
     const item = {
       id: data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `activity-${Date.now()}`,
       title: data.title,
       date: data.date,
       category: data.category,
-      summary: data.summary
+      summary: data.summary,
+      image: data.image || "",
+      link: data.link || "",
+      details: data.details || ""
     };
     saveActivities([item, ...getActivities()]);
     form.reset();
@@ -230,12 +257,12 @@ function renderPromotions() {
 
   if (publicList) {
     const approved = promotions.filter((item) => item.status === "approved");
-    publicList.innerHTML = approved.length ? approved.map((item) => promotionCard(item)).join("") : `<p class="empty-state">No approved promotions are currently published.</p>`;
+    publicList.innerHTML = approved.length ? approved.map((item) => promotionCard(item, { publicView: true })).join("") : `<p class="empty-state">No member promotions are currently published.</p>`;
   }
 
   if (memberList) {
     const mine = promotions.filter((item) => item.ownerEmail === currentEmail);
-    memberList.innerHTML = mine.length ? mine.map((item) => promotionCard(item, true)).join("") : `<p class="empty-state">No promotions submitted yet.</p>`;
+    memberList.innerHTML = mine.length ? mine.map((item) => promotionCard(item, { memberControls: true, showStatus: true })).join("") : `<p class="empty-state">No promotions submitted yet.</p>`;
     memberList.querySelectorAll("[data-edit-promotion]").forEach((button) => {
       button.addEventListener("click", () => loadPromotionForEdit(button.dataset.editPromotion));
     });
@@ -249,8 +276,8 @@ function renderPromotions() {
   }
 
   if (approvalList) {
-    const pending = promotions.filter((item) => item.status === "pending");
-    approvalList.innerHTML = pending.length ? pending.map((item) => promotionCard(item, false, true)).join("") : `<p class="empty-state">No promotions are awaiting approval.</p>`;
+    const managed = promotions;
+    approvalList.innerHTML = managed.length ? managed.map((item) => promotionCard(item, { approvalControls: true, showStatus: true })).join("") : `<p class="empty-state">No promotions have been submitted yet.</p>`;
     approvalList.querySelectorAll("[data-approve-promotion]").forEach((button) => {
       button.addEventListener("click", () => {
         savePromotions(getPromotions().map((item) => item.id === button.dataset.approvePromotion ? { ...item, status: "approved", approvedAt: new Date().toISOString() } : item));
@@ -265,6 +292,17 @@ function renderPromotions() {
         showToast("Promotion rejected.");
       });
     });
+    approvalList.querySelectorAll("[data-admin-delete-promotion]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (localStorage.getItem("atbcRole") !== "admin" || !localStorage.getItem("atbcUserEmail")) {
+          showToast("Admin access is required.");
+          return;
+        }
+        savePromotions(getPromotions().filter((item) => item.id !== button.dataset.adminDeletePromotion));
+        renderPromotions();
+        showToast("Promotion deleted.");
+      });
+    });
   }
 
   const limit = document.getElementById("promotionLimitText");
@@ -274,18 +312,18 @@ function renderPromotions() {
   }
 }
 
-function promotionCard(item, includeControls = false, includeApproval = false) {
+function promotionCard(item, options = {}) {
+  const { memberControls = false, approvalControls = false, showStatus = false, publicView = false } = options;
+  const statusLabel = item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : "Pending";
   return `
     <article class="promotion-card">
-      <div class="activity-card-meta">
-        <span class="activity-badge">${escapeHtml(item.tier || "Member")}</span>
-        <span class="activity-date">${escapeHtml(item.status)}</span>
-      </div>
+      ${showStatus ? `<div class="activity-card-meta"><span class="activity-badge">${escapeHtml(item.tier || "Member")}</span><span class="activity-date">${escapeHtml(statusLabel)}</span></div>` : ""}
       <h3>${escapeHtml(item.businessName)}</h3>
       <p>${escapeHtml(item.description)}</p>
-      <a class="activity-read-more" href="${escapeHtml(item.website)}" target="_blank" rel="noreferrer noopener">${escapeHtml(item.offerTitle || "Visit business")}</a>
-      ${includeControls ? `<div class="promotion-actions"><button class="btn btn-outline-navy" data-edit-promotion="${escapeHtml(item.id)}" type="button">Edit</button><button class="btn btn-red" data-delete-promotion="${escapeHtml(item.id)}" type="button">Delete</button></div>` : ""}
-      ${includeApproval ? `<div class="promotion-actions"><button class="btn btn-primary" data-approve-promotion="${escapeHtml(item.id)}" type="button">Approve</button><button class="btn btn-outline-navy" data-reject-promotion="${escapeHtml(item.id)}" type="button">Reject</button></div>` : ""}
+      ${mediaMarkup(item)}
+      ${item.website ? `<a class="activity-read-more" href="${escapeHtml(item.website)}" target="_blank" rel="noreferrer noopener">${escapeHtml(item.offerTitle || "Visit business")}</a>` : publicView ? "" : `<span class="activity-read-more">${escapeHtml(item.offerTitle || "Member announcement")}</span>`}
+      ${memberControls ? `<div class="promotion-actions"><button class="btn btn-outline-navy" data-edit-promotion="${escapeHtml(item.id)}" type="button">Edit</button><button class="btn btn-red" data-delete-promotion="${escapeHtml(item.id)}" type="button">Delete</button></div>` : ""}
+      ${approvalControls ? `<div class="promotion-actions">${item.status !== "approved" ? `<button class="btn btn-primary" data-approve-promotion="${escapeHtml(item.id)}" type="button">Approve</button>` : ""}<button class="btn btn-outline-navy" data-reject-promotion="${escapeHtml(item.id)}" type="button">Reject</button><button class="btn btn-red" data-admin-delete-promotion="${escapeHtml(item.id)}" type="button">Delete</button></div>` : ""}
     </article>
   `;
 }
@@ -299,6 +337,8 @@ function loadPromotionForEdit(id) {
   form.elements.offerTitle.value = item.offerTitle;
   form.elements.website.value = item.website;
   form.elements.description.value = item.description;
+  if (form.elements.image) form.elements.image.value = item.image || "";
+  if (form.elements.details) form.elements.details.value = item.details || "";
   form.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
@@ -330,6 +370,8 @@ function setupPromotionForm() {
       offerTitle: data.offerTitle,
       website: data.website,
       description: data.description,
+      image: data.image || "",
+      details: data.details || "",
       status: "pending",
       updateLog: [new Date().toISOString(), ...updateLog]
     };
@@ -392,16 +434,16 @@ function applyRoleAccess() {
   document.body.dataset.role = role;
   document.body.classList.toggle("is-logged-in", isLoggedIn);
   document.querySelectorAll(".role-editor-only").forEach((el) => {
-    el.style.display = role === "admin" ? "block" : "none";
+    el.style.display = isLoggedIn && ["admin", "president"].includes(role) ? "block" : "none";
   });
   document.querySelectorAll(".role-president-only").forEach((el) => {
-    el.style.display = ["admin", "president"].includes(role) ? "block" : "none";
+    el.style.display = isLoggedIn && ["admin", "president"].includes(role) ? "block" : "none";
   });
   document.querySelectorAll(".role-admin-only").forEach((el) => {
-    el.style.display = role === "admin" ? "block" : "none";
+    el.style.display = isLoggedIn && role === "admin" ? "block" : "none";
   });
   document.querySelectorAll(".role-member-only").forEach((el) => {
-    el.style.display = promotionLimitFor(role) ? "block" : "none";
+    el.style.display = isLoggedIn && promotionLimitFor(role) ? "block" : "none";
   });
   document.querySelectorAll(".role-visitor-only").forEach((el) => {
     el.style.display = role === "visitor" && isLoggedIn ? "block" : "none";
@@ -416,6 +458,21 @@ function applyRoleAccess() {
   const intro = document.getElementById("dashboardIntro");
   if (title) title.textContent = `Welcome, ${currentName}.`;
   if (intro) intro.textContent = promotionLimitFor(role) ? `${tierRules[role].label} member access is active.` : `${roleLabel} access is active.`;
+  updateAccountNavigation(role, isLoggedIn);
+}
+
+function updateAccountNavigation(role, isLoggedIn) {
+  document.querySelectorAll('.main-nav a[href="login.html"]').forEach((link) => {
+    if (isLoggedIn) {
+      link.textContent = role === "president" ? "President" : "Dashboard";
+      link.setAttribute("href", role === "president" ? "president.html" : "dashboard.html");
+      link.classList.add("account-link");
+    } else {
+      link.textContent = "Login";
+      link.setAttribute("href", "login.html");
+      link.classList.remove("account-link");
+    }
+  });
 }
 
 function setupAuthForms() {
@@ -588,8 +645,8 @@ function renderDashboardHome() {
       ${activities.map((item) => `<article class="feed-card"><span>${escapeHtml(item.category)} - ${formatDate(item.date)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p><a href="activity.html#${escapeHtml(item.id)}">Read update</a></article>`).join("")}
       <article class="feed-card">
         <p class="eyebrow">Member promotions</p>
-        <h3>${approvedPromos.length ? "Latest approved promotions" : "Promotion board"}</h3>
-        <p>${approvedPromos.length ? approvedPromos.map((item) => escapeHtml(item.businessName)).join(", ") : "Approved Silver, Gold, and Platinum member promotions will appear here."}</p>
+        <h3>${approvedPromos.length ? "Latest member promotions" : "Promotion board"}</h3>
+        <p>${approvedPromos.length ? approvedPromos.map((item) => escapeHtml(item.businessName)).join(", ") : "Silver, Gold, and Platinum member promotions will appear here."}</p>
         <a href="promotion.html">View promotions</a>
       </article>
     </section>

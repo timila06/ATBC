@@ -2369,6 +2369,21 @@ footer {
   font-weight: 800;
 }
 
+.content-card-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 16px 0;
+  border: 1px solid var(--line);
+}
+
+.content-card-detail {
+  margin-top: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .promotion-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 420px;

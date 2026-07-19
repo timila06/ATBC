@@ -21,6 +21,9 @@ create table if not exists events (
   event_date timestamptz not null,
   location text,
   summary text not null,
+  image_url text,
+  external_link text,
+  details text,
   created_by uuid references profiles(id) on delete set null,
   created_at timestamptz default now()
 );
@@ -56,6 +59,9 @@ create table if not exists activities (
   activity_date date not null,
   category text not null,
   summary text not null,
+  image_url text,
+  external_link text,
+  details text,
   created_by uuid references profiles(id) on delete set null,
   created_at timestamptz default now()
 );
@@ -69,6 +75,8 @@ create table if not exists promotions (
   offer_title text not null,
   website text not null,
   description text not null,
+  image_url text,
+  details text,
   status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
   update_log timestamptz[] default array[]::timestamptz[],
   approved_by uuid references profiles(id) on delete set null,
