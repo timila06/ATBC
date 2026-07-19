@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile | ATBC</title>
+    <link rel="stylesheet" href="styles.css?v=20260723" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-header scrolled" id="siteHeader">
+      <a class="brand" href="index.html"><span class="brand-name">Australia Thailand Business Council</span></a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation"><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="mainNav">
+        <a href="dashboard.html">Member Home</a>
+        <a href="events.html">Events</a>
+        <a href="activity.html">Activity</a>
+        <a href="promotion.html">Promotion</a>
+        <a href="member-directory.html">Members</a>
+        <a href="profile.html" class="is-active">Profile</a>
+        <button class="nav-cta nav-button" id="logoutBtn" type="button">Logout</button>
+      </nav>
+    </header>
+
+    <main class="page-main">
+      <section class="page-hero">
+        <div class="section-inner">
+          <p class="eyebrow">Profile</p>
+          <h1>Your ATBC account profile.</h1>
+          <p>Add the personal, company, and notification details you want connected with your account.</p>
+        </div>
+      </section>
+
+      <section class="content-page-block">
+        <div class="section-inner profile-layout">
+          <form class="profile-form" id="profileForm">
+            <div class="profile-form-grid">
+              <div class="form-group"><label for="profileName">Full name</label><input id="profileName" name="name" required /></div>
+              <div class="form-group"><label for="profileEmail">Email address</label><input id="profileEmail" name="email" type="email" disabled /></div>
+              <div class="form-group full"><label for="profilePhoto">Profile picture URL</label><input id="profilePhoto" name="photo" placeholder="https://..." /></div>
+              <div class="form-group"><label for="profilePhone">Phone</label><input id="profilePhone" name="phone" /></div>
+              <div class="form-group"><label for="profileCompany">Company or workplace</label><input id="profileCompany" name="company" /></div>
+              <div class="form-group"><label for="profilePosition">Title / position</label><input id="profilePosition" name="position" /></div>
+              <div class="form-group"><label for="profileIndustry">Industry / sector</label><input id="profileIndustry" name="industry" /></div>
+              <div class="form-group full"><label for="profileBio">Personal details</label><textarea id="profileBio" name="bio"></textarea></div>
+            </div>
+            <fieldset class="notification-settings" id="notificationSettings">
+              <legend>Email notifications</legend>
+              <label><input id="notifyAtbc" name="notifyAtbc" type="checkbox" checked /> ATBC events, activity updates, and announcements</label>
+              <label><input id="notifyPromotions" name="notifyPromotions" type="checkbox" checked /> Silver, Gold, and Platinum member promotions</label>
+            </fieldset>
+            <button class="btn btn-primary" type="submit">Save profile</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast"><span class="toast-icon">OK</span><span id="toastMsg">Updated.</span></div>
+    <script src="supabase-config.js?v=20260723"></script>
+    <script src="script.js?v=20260723"></script>
+  </body>
+</html>

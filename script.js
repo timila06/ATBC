@@ -18,9 +18,10 @@ const tierRules = {
   "individual-affiliate": { label: "Individual Affiliate", updates: 0, windowDays: 30, price: 2500, slots: 1, type: "individual" },
   silver: { label: "Silver", updates: 3, windowDays: 30, price: 12000, slots: 3, type: "business" },
   gold: { label: "Gold", updates: 1, windowDays: 7, price: 22000, slots: 6, type: "business" },
-  platinum: { label: "Platinum", updates: 2, windowDays: 7, price: 35000, slots: 10, type: "business" },
-  custom: { label: "Custom", updates: 2, windowDays: 7, price: 0, slots: 10, type: "business" }
+  platinum: { label: "Platinum", updates: 2, windowDays: 7, price: 35000, slots: 10, type: "business" }
 };
+
+const promotionRoles = ["silver", "gold", "platinum"];
 
 let supabaseClient = null;
 
@@ -103,6 +104,24 @@ function getUsers() {
 
 function saveUsers(users) {
   localStorage.setItem("atbcUsers", JSON.stringify(users));
+}
+
+function getCurrentUser() {
+  const role = localStorage.getItem("atbcRole") || "visitor";
+  const email = localStorage.getItem("atbcUserEmail") || "";
+  const name = localStorage.getItem("atbcUserName") || "ATBC member";
+  return { role, email, name };
+}
+
+function getProfiles() {
+  const saved = localStorage.getItem("atbcProfiles");
+  return saved ? JSON.parse(saved) : {};
+}
+
+function saveProfile(email, profile) {
+  const profiles = getProfiles();
+  profiles[email] = { ...(profiles[email] || {}), ...profile, updatedAt: new Date().toISOString() };
+  localStorage.setItem("atbcProfiles", JSON.stringify(profiles));
 }
 
 function getLoginLog() {
@@ -193,7 +212,7 @@ function setupActivityForm() {
 }
 
 function promotionLimitFor(role) {
-  return tierRules[role] || null;
+  return promotionRoles.includes(role) ? tierRules[role] : null;
 }
 
 function recentPromotionUpdates(promotion, rule) {
@@ -368,9 +387,10 @@ function setupSliderButtons() {
 }
 
 function applyRoleAccess() {
-  const role = localStorage.getItem("atbcRole") || "visitor";
-  const currentName = localStorage.getItem("atbcUserName") || "Visitor";
+  const { role, name: currentName } = getCurrentUser();
+  const isLoggedIn = Boolean(localStorage.getItem("atbcUserEmail"));
   document.body.dataset.role = role;
+  document.body.classList.toggle("is-logged-in", isLoggedIn);
   document.querySelectorAll(".role-editor-only").forEach((el) => {
     el.style.display = role === "admin" ? "block" : "none";
   });
@@ -384,14 +404,18 @@ function applyRoleAccess() {
     el.style.display = promotionLimitFor(role) ? "block" : "none";
   });
   document.querySelectorAll(".role-visitor-only").forEach((el) => {
-    el.style.display = role === "visitor" ? "block" : "none";
+    el.style.display = role === "visitor" && isLoggedIn ? "block" : "none";
+  });
+  document.querySelectorAll(".role-logged-in-only").forEach((el) => {
+    el.style.display = isLoggedIn ? "block" : "none";
   });
   const status = document.getElementById("roleStatus");
-  if (status) status.innerHTML = role === "visitor" ? "Current role: Visitor" : `Current role: ${role}`;
+  const roleLabel = role === "visitor" ? "Registered user" : role;
+  if (status) status.innerHTML = `Current access: ${roleLabel}`;
   const title = document.getElementById("dashboardTitle");
   const intro = document.getElementById("dashboardIntro");
   if (title) title.textContent = `Welcome, ${currentName}.`;
-  if (intro) intro.textContent = `Current access: ${role}.`;
+  if (intro) intro.textContent = promotionLimitFor(role) ? `${tierRules[role].label} member access is active.` : `${roleLabel} access is active.`;
 }
 
 function setupAuthForms() {
@@ -434,9 +458,18 @@ function setupAuthForms() {
         name: data.name.trim(),
         email,
         password: data.password,
+        notifications: data.notifications === "on",
         registeredAt: new Date().toISOString()
       };
       saveUsers([user, ...users]);
+      saveProfile(email, {
+        name: user.name,
+        email,
+        notifications: {
+          atbcUpdates: data.notifications === "on",
+          memberPromotions: data.notifications === "on"
+        }
+      });
       localStorage.setItem("atbcRole", "visitor");
       localStorage.setItem("atbcUserName", user.name);
       localStorage.setItem("atbcUserEmail", user.email);
@@ -463,7 +496,7 @@ function setupMemberPaymentForm() {
   const tierInput = document.getElementById("selectedTier");
   const tierTitle = document.getElementById("memberTierTitle");
   const rule = tierRules[selectedTier] || tierRules.silver;
-  if (tierInput) tierInput.value = selectedTier;
+  if (tierInput) tierInput.value = tierRules[selectedTier] ? selectedTier : "silver";
   if (tierTitle) tierTitle.textContent = `${rule.label} Membership`;
   renderMembershipApplication(rule);
   form.querySelectorAll('input[name="duration"]').forEach((input) => {
@@ -473,7 +506,7 @@ function setupMemberPaymentForm() {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(form).entries());
     const email = data.email.trim().toLowerCase();
-    const isPromotionMember = ["silver", "gold", "platinum"].includes(data.tier);
+    const isPromotionMember = promotionRoles.includes(data.tier);
     const users = getUsers().filter((user) => user.email !== email);
     const user = {
       role: isPromotionMember ? data.tier : "visitor",
@@ -490,12 +523,179 @@ function setupMemberPaymentForm() {
       paidAt: new Date().toISOString()
     };
     saveUsers([user, ...users]);
+    saveProfile(email, {
+      name: user.name,
+      email,
+      phone: data.phone,
+      company: data.businessName,
+      position: data.position,
+      tier: data.tier,
+      notifications: { atbcUpdates: true, memberPromotions: true }
+    });
     localStorage.setItem("atbcRole", user.role);
     localStorage.setItem("atbcUserName", user.name);
     localStorage.setItem("atbcUserEmail", user.email);
     addLoginLog(user);
     window.location.href = isPromotionMember ? "promotion.html" : "dashboard.html";
   });
+}
+
+function memberRoleLabel(role, tier) {
+  if (promotionRoles.includes(role)) return `${tierRules[role].label} member`;
+  if (tierRules[tier]?.type === "individual") return `${tierRules[tier].label} member`;
+  if (role === "admin") return "Admin";
+  if (role === "president") return "President";
+  return "Registered user";
+}
+
+function renderDashboardHome() {
+  const shell = document.getElementById("memberHomeShell");
+  if (!shell) return;
+  const { email, name, role } = getCurrentUser();
+  const profile = getProfiles()[email] || {};
+  const users = getUsers();
+  const completionItems = [
+    Boolean(profile.photo),
+    Boolean(profile.phone),
+    Boolean(profile.company),
+    Boolean(profile.position)
+  ];
+  const completion = 25 + completionItems.filter(Boolean).length * 18;
+  const approvedPromos = getPromotions().filter((item) => item.status === "approved").slice(0, 3);
+  const activities = getActivities().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+  const memberCount = users.filter((user) => promotionRoles.includes(user.role) || tierRules[user.tier]).length;
+  shell.innerHTML = `
+    <aside class="member-home-sidebar">
+      <article class="member-profile-card">
+        <div class="profile-avatar">${profile.photo ? `<img src="${escapeHtml(profile.photo)}" alt="${escapeHtml(name)}" />` : escapeHtml(name.slice(0, 2).toUpperCase())}</div>
+        <h2>${escapeHtml(name)}</h2>
+        <p>${escapeHtml(memberRoleLabel(role, profile.tier))}</p>
+        <a class="btn btn-outline-navy" href="profile.html">My profile</a>
+      </article>
+      <article class="member-quick-card">
+        <h3>ATBC member access</h3>
+        <p>View activity updates, events, member listings, and approved member promotions.</p>
+        <a href="member-directory.html">Browse members</a>
+      </article>
+    </aside>
+    <section class="member-feed">
+      <article class="feed-card feed-feature">
+        <p class="eyebrow">Main ATBC event</p>
+        <h2>Australia-Thailand Business Outlook Forum</h2>
+        <p>Senior members, partners, and guests connect around trade outlooks, investment pathways, and practical bilateral opportunities.</p>
+        <div class="feed-actions"><a class="btn btn-primary" href="events.html">View events</a><a class="btn btn-outline-navy" href="activity.html">Activity updates</a></div>
+      </article>
+      ${activities.map((item) => `<article class="feed-card"><span>${escapeHtml(item.category)} - ${formatDate(item.date)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p><a href="activity.html#${escapeHtml(item.id)}">Read update</a></article>`).join("")}
+      <article class="feed-card">
+        <p class="eyebrow">Member promotions</p>
+        <h3>${approvedPromos.length ? "Latest approved promotions" : "Promotion board"}</h3>
+        <p>${approvedPromos.length ? approvedPromos.map((item) => escapeHtml(item.businessName)).join(", ") : "Approved Silver, Gold, and Platinum member promotions will appear here."}</p>
+        <a href="promotion.html">View promotions</a>
+      </article>
+    </section>
+    <aside class="member-home-sidebar">
+      <article class="member-progress-card">
+        <p class="eyebrow">Complete your profile</p>
+        <div class="progress-ring"><strong>${Math.min(completion, 100)}%</strong><span>Complete</span></div>
+        <a class="btn btn-gold" href="profile.html">Update profile</a>
+      </article>
+      <article class="member-quick-card">
+        <h3>Notifications</h3>
+        <p>ATBC email notifications are prepared for new events, activity updates, and member promotions.</p>
+        <a href="profile.html#notificationSettings">Manage preferences</a>
+      </article>
+      <article class="member-quick-card">
+        <h3>Network snapshot</h3>
+        <p>${memberCount} paid or individual member account${memberCount === 1 ? "" : "s"} registered in this site workspace.</p>
+      </article>
+    </aside>
+  `;
+}
+
+function setupProfileForm() {
+  const form = document.getElementById("profileForm");
+  if (!form) return;
+  const { email, name } = getCurrentUser();
+  const profile = getProfiles()[email] || {};
+  const userEmail = document.getElementById("profileEmail");
+  if (userEmail) userEmail.value = email;
+  Object.entries({
+    profileName: profile.name || name,
+    profilePhoto: profile.photo || "",
+    profilePhone: profile.phone || "",
+    profileCompany: profile.company || "",
+    profilePosition: profile.position || "",
+    profileIndustry: profile.industry || "",
+    profileBio: profile.bio || ""
+  }).forEach(([id, value]) => {
+    const input = document.getElementById(id);
+    if (input) input.value = value;
+  });
+  const atbcUpdates = document.getElementById("notifyAtbc");
+  const memberPromos = document.getElementById("notifyPromotions");
+  if (atbcUpdates) atbcUpdates.checked = profile.notifications?.atbcUpdates !== false;
+  if (memberPromos) memberPromos.checked = profile.notifications?.memberPromotions !== false;
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    saveProfile(email, {
+      name: data.name,
+      photo: data.photo,
+      phone: data.phone,
+      company: data.company,
+      position: data.position,
+      industry: data.industry,
+      bio: data.bio,
+      notifications: {
+        atbcUpdates: data.notifyAtbc === "on",
+        memberPromotions: data.notifyPromotions === "on"
+      }
+    });
+    const users = getUsers().map((user) => user.email === email ? { ...user, name: data.name } : user);
+    saveUsers(users);
+    localStorage.setItem("atbcUserName", data.name);
+    showToast("Profile saved.");
+  });
+}
+
+function renderMemberDirectory() {
+  const list = document.getElementById("memberDirectoryList");
+  if (!list) return;
+  const users = getUsers().filter((user) => promotionRoles.includes(user.role) || tierRules[user.tier]);
+  const profiles = getProfiles();
+  const seeded = [
+    { name: "M.L. Laksasubha Kridakon", role: "President", company: "Australia Thailand Business Council", tier: "president" },
+    { name: "ATBC Secretariat", role: "Administration", company: "Australia Thailand Business Council", tier: "admin" }
+  ];
+  const members = [...seeded, ...users.map((user) => ({ ...user, ...(profiles[user.email] || {}) }))];
+  list.innerHTML = members.map((member) => `
+    <article class="directory-card">
+      <div class="profile-avatar small">${member.photo ? `<img src="${escapeHtml(member.photo)}" alt="${escapeHtml(member.name)}" />` : escapeHtml((member.name || "AT").slice(0, 2).toUpperCase())}</div>
+      <div>
+        <h3>${escapeHtml(member.name || "ATBC member")}</h3>
+        <p>${escapeHtml(member.company || member.businessName || "Member organisation")}</p>
+        <span>${escapeHtml(memberRoleLabel(member.role, member.tier))}</span>
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderEvents() {
+  const list = document.getElementById("eventsList");
+  if (!list) return;
+  const events = [
+    { title: "Australia-Thailand Business Outlook Forum", date: "2026-08-20", location: "Bangkok", text: "A flagship discussion on investment conditions, market access, and member opportunities." },
+    { title: "Member Networking Evening", date: "2026-09-05", location: "Bangkok", text: "A practical relationship-building evening for members, sponsors, and partner organisations." },
+    { title: "Trade Mission Briefing", date: "2026-09-28", location: "Hybrid", text: "A preparatory session for businesses exploring cross-border trade missions and roadshows." }
+  ];
+  list.innerHTML = events.map((event) => `
+    <article class="event-card">
+      <span>${formatDate(event.date)} - ${escapeHtml(event.location)}</span>
+      <h3>${escapeHtml(event.title)}</h3>
+      <p>${escapeHtml(event.text)}</p>
+      <a class="btn btn-outline-navy" href="contact.html">Register interest</a>
+    </article>
+  `).join("");
 }
 
 function formatBaht(value) {
@@ -530,17 +730,17 @@ function renderMembershipApplication(rule) {
   if (durationText) durationText.textContent = `This is a ${totals.duration * 12}-month membership`;
   if (slots) slots.textContent = `This membership includes ${rule.slots} member slot(s)`;
   if (desc) desc.textContent = rule.type === "individual" ? "Individual membership for professionals connected to Australia-Thailand business." : "Business membership with ATBC network access and member promotion privileges.";
-  if (unitPrice) unitPrice.textContent = rule.price ? formatBaht(rule.price) : "Custom";
-  if (lineTotal) lineTotal.textContent = rule.price ? formatBaht(totals.subtotal) : "Quoted";
-  if (fee) fee.textContent = rule.price ? formatBaht(totals.applicationFee) : "Quoted";
-  if (tax) tax.textContent = rule.price ? formatBaht(totals.tax) : "Quoted";
-  if (balance) balance.textContent = rule.price ? formatBaht(totals.total) : "Contact ATBC";
+  if (unitPrice) unitPrice.textContent = formatBaht(rule.price);
+  if (lineTotal) lineTotal.textContent = formatBaht(totals.subtotal);
+  if (fee) fee.textContent = formatBaht(totals.applicationFee);
+  if (tax) tax.textContent = formatBaht(totals.tax);
+  if (balance) balance.textContent = formatBaht(totals.total);
   const one = document.getElementById("durationOne");
   const two = document.getElementById("durationTwo");
   const three = document.getElementById("durationThree");
-  if (one) one.textContent = rule.price ? formatBaht(rule.price) : "Custom";
-  if (two) two.textContent = rule.price ? formatBaht(rule.price * 2 * 0.9) : "Custom";
-  if (three) three.textContent = rule.price ? formatBaht(rule.price * 3 * 0.85) : "Custom";
+  if (one) one.textContent = formatBaht(rule.price);
+  if (two) two.textContent = formatBaht(rule.price * 2 * 0.9);
+  if (three) three.textContent = formatBaht(rule.price * 3 * 0.85);
 }
 
 function renderUserRegistry() {
@@ -619,6 +819,10 @@ initSupabase().finally(() => {
   setupStatementForms();
   renderUserRegistry();
   renderPromotions();
+  renderDashboardHome();
+  setupProfileForm();
+  renderMemberDirectory();
+  renderEvents();
   updateHeader();
   updateProgress();
 });

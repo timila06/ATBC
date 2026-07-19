@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Events | ATBC</title>
+    <link rel="stylesheet" href="styles.css?v=20260723" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-header scrolled" id="siteHeader">
+      <a class="brand" href="index.html"><span class="brand-name">Australia Thailand Business Council</span></a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation"><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="mainNav">
+        <a href="index.html">Home</a>
+        <a href="events.html" class="is-active">Events</a>
+        <a href="activity.html">Activity</a>
+        <a href="promotion.html">Promotion</a>
+        <a href="member-directory.html">Members</a>
+        <a href="dashboard.html">Member Home</a>
+        <a href="contact.html" class="nav-cta">Contact</a>
+      </nav>
+    </header>
+
+    <main class="page-main">
+      <section class="page-hero events-hero">
+        <div class="section-inner">
+          <p class="eyebrow">Events</p>
+          <h1>Main ATBC events and briefings.</h1>
+          <p>Follow upcoming council events, business briefings, networking evenings, and trade mission sessions.</p>
+        </div>
+      </section>
+      <section class="content-page-block">
+        <div class="section-inner event-grid" id="eventsList"></div>
+      </section>
+    </main>
+    <script src="supabase-config.js?v=20260723"></script>
+    <script src="script.js?v=20260723"></script>
+  </body>
+</html>

@@ -8,11 +8,14 @@ const pages = [
   "board-members",
   "contact",
   "dashboard",
+  "events",
   "login",
+  "member-directory",
   "member-register",
   "memberships",
   "mission",
   "president",
+  "profile",
   "promotion",
   "sponsors"
 ];

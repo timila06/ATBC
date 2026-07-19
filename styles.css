@@ -1,5 +1,5 @@
 /* ============================================================
-   ATBC – Australia Thailand Business Council
+   ATBC - Australia Thailand Business Council
    Design System: Editorial / Image-led / Council style
    ============================================================ */
 
@@ -120,7 +120,7 @@ ul { list-style: none; }
 }
 
 .brand-logo {
-  /* Banner logo is landscape — set height and let width be natural */
+  /* Banner logo is landscape - set height and let width be natural */
   height: 46px;
   width: auto;
   max-width: 260px;
@@ -190,7 +190,7 @@ ul { list-style: none; }
 }
 
 /* ============================================================
-   SECTIONS – SHARED
+   SECTIONS - SHARED
    ============================================================ */
 section {
   scroll-margin-top: var(--header-h);
@@ -204,7 +204,7 @@ section {
 }
 
 /* ============================================================
-   HERO – FULLSCREEN LOGO
+   HERO - FULLSCREEN LOGO
    ============================================================ */
 #home {
   position: relative;
@@ -229,7 +229,7 @@ section {
   transform: scale(1.06); /* prevent bleed-white edges */
 }
 
-/* Grid of two images – left Thailand temple, right Australia harbour */
+/* Grid of two images - left Thailand temple, right Australia harbour */
 .hero-visual-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -274,7 +274,7 @@ section {
   opacity: 0.9;
 }
 
-/* Hero-logo-full removed — logo now lives in the header */
+/* Hero-logo-full removed - logo now lives in the header */
 
 .hero-scroll-cue {
   position: absolute;
@@ -300,7 +300,7 @@ section {
   50%       { transform: translateX(-50%) translateY(8px); }
 }
 
-/* Hero content — fills the full screen height, centred vertically */
+/* Hero content - fills the full screen height, centred vertically */
 .hero-content {
   position: relative;
   z-index: 2;
@@ -741,7 +741,7 @@ section {
   margin: 0 auto;
 }
 
-/* President card – highlighted */
+/* President card - highlighted */
 .board-president-card {
   background: linear-gradient(135deg, rgba(184,137,58,.18), rgba(184,137,58,.06));
   border: 1px solid rgba(184,137,58,.4);
@@ -954,7 +954,7 @@ section {
   line-height: 1.45;
 }
 .membership-benefits li::before {
-  content: '✓';
+  content: 'OK';
   color: var(--gold);
   font-weight: 800;
   flex-shrink: 0;
@@ -1110,7 +1110,7 @@ section {
   color: var(--muted);
 }
 .sponsor-placement-item::before {
-  content: '→';
+  content: '->';
   color: var(--gold);
   font-weight: 700;
 }
@@ -2051,6 +2051,10 @@ footer {
   align-items: start;
 }
 
+.auth-layout-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .auth-card,
 .dashboard-card,
 .auth-management-note {
@@ -2107,6 +2111,205 @@ footer {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
+}
+
+.nav-button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.dashboard-page {
+  background: #f4f6f8;
+}
+
+.account-hero {
+  padding: calc(var(--header-h) + 42px) 0 34px;
+  background:
+    linear-gradient(135deg, rgba(13,31,56,.94), rgba(28,68,115,.82)),
+    url("assets/australia-harbour.jpg") center/cover;
+  color: var(--white);
+}
+
+.account-hero-inner {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: end;
+}
+
+.account-hero h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(40px, 7vw, 72px);
+  line-height: 1;
+  margin: 8px 0 12px;
+}
+
+.account-hero p:not(.eyebrow) {
+  color: rgba(255,255,255,.78);
+  font-size: 18px;
+}
+
+.account-hero-actions,
+.feed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.account-hero-actions {
+  justify-content: flex-end;
+}
+
+.member-home-section {
+  padding: 42px 0 70px;
+}
+
+.member-home-shell {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr) 300px;
+  gap: 24px;
+  align-items: start;
+}
+
+.member-home-sidebar,
+.member-feed {
+  display: grid;
+  gap: 20px;
+}
+
+.member-profile-card,
+.member-quick-card,
+.member-progress-card,
+.feed-card,
+.profile-form,
+.directory-card,
+.event-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.member-profile-card,
+.member-quick-card,
+.member-progress-card,
+.feed-card,
+.event-card {
+  padding: 24px;
+}
+
+.member-profile-card {
+  text-align: center;
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  color: var(--navy);
+  font-weight: 900;
+  font-size: 26px;
+  background: #f7f9fb;
+  overflow: hidden;
+}
+
+.profile-avatar.small {
+  width: 58px;
+  height: 58px;
+  margin: 0;
+  font-size: 16px;
+  flex: 0 0 auto;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.member-profile-card h2,
+.feed-card h2,
+.feed-card h3,
+.member-quick-card h3,
+.member-progress-card h3,
+.directory-card h3,
+.event-card h3 {
+  color: var(--navy);
+}
+
+.member-profile-card p,
+.member-quick-card p,
+.member-progress-card p,
+.feed-card p,
+.directory-card p,
+.event-card p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.member-quick-card a,
+.feed-card a,
+.directory-card span {
+  color: var(--gold);
+  font-weight: 800;
+}
+
+.feed-feature {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.95), rgba(240,245,251,.95)),
+    url("assets/thailand-temple.jpg") center/cover;
+}
+
+.feed-feature h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.1;
+}
+
+.feed-card span,
+.event-card span {
+  display: block;
+  color: var(--gold);
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.feed-actions {
+  margin-top: 22px;
+}
+
+.progress-ring {
+  width: 150px;
+  height: 150px;
+  margin: 18px auto 22px;
+  border-radius: 999px;
+  border: 16px solid #e5e8ee;
+  border-left-color: var(--gold);
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.progress-ring strong {
+  color: var(--navy);
+  font-size: 34px;
+}
+
+.progress-ring span {
+  color: var(--muted);
+}
+
+.dashboard-admin-tools {
+  padding-top: 0;
+  background: #f4f6f8;
 }
 
 .dashboard-card h2 {
@@ -2306,7 +2509,8 @@ footer {
 .role-admin-only,
 .role-president-only,
 .role-member-only,
-.role-visitor-only {
+.role-visitor-only,
+.role-logged-in-only {
   display: none;
 }
 
@@ -2334,6 +2538,10 @@ footer {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
+}
+
+.business-tier-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .individual-tier-grid {
@@ -2391,7 +2599,7 @@ footer {
 }
 
 .tier-catalogue-card li::before {
-  content: "✓";
+  content: "OK";
   color: var(--gold);
   margin-right: 8px;
 }
@@ -2418,6 +2626,84 @@ footer {
 .custom-tier p,
 .custom-tier li {
   color: rgba(255,255,255,.72);
+}
+
+.profile-layout {
+  max-width: 980px;
+}
+
+.profile-form {
+  padding: clamp(28px, 5vw, 52px);
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.profile-form-grid .full {
+  grid-column: 1 / -1;
+}
+
+.notification-settings {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  margin: 24px 0;
+  display: grid;
+  gap: 14px;
+}
+
+.notification-settings legend {
+  color: var(--navy);
+  font-weight: 900;
+  padding: 0 8px;
+}
+
+.notification-settings label,
+.checkbox-line {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.directory-grid,
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.directory-card {
+  padding: 22px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.event-card {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-card p {
+  flex: 1;
+}
+
+.members-hero {
+  background:
+    linear-gradient(135deg, rgba(13,31,56,.9), rgba(181,37,53,.5)),
+    url("assets/thailand-temple.jpg") center/cover;
+}
+
+.events-hero {
+  background:
+    linear-gradient(135deg, rgba(13,31,56,.9), rgba(28,68,115,.62)),
+    url("assets/australia-harbour.jpg") center/cover;
 }
 
 .application-body {
@@ -2643,12 +2929,30 @@ footer {
   .login-grid,
   .membership-home-grid,
   .tier-catalogue-grid,
+  .business-tier-grid,
   .individual-tier-grid,
   .auth-layout,
   .dashboard-grid,
+  .member-home-shell,
+  .directory-grid,
+  .event-grid,
+  .profile-form-grid,
   .mission-detail-grid,
   .promotion-layout {
     grid-template-columns: 1fr;
+  }
+
+  .account-hero-inner {
+    display: grid;
+    align-items: start;
+  }
+
+  .account-hero-actions {
+    justify-content: flex-start;
+  }
+
+  .profile-form-grid .full {
+    grid-column: auto;
   }
 
   .promotion-panel {

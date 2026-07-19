@@ -14,21 +14,27 @@ The site presents ATBC's bilateral business network, council role, president sta
 - `memberships.html` - Silver, Gold, and Platinum membership paths
 - `member-register.html` - Member registration and payment flow
 - `promotion.html` - Member promotion submission and Admin approval
+- `events.html` - Main ATBC events
+- `member-directory.html` - ATBC member directory
+- `profile.html` - Registered user profile and notification preferences
 - `sponsors.html` - Sponsor pathways
 - `board-members.html` - President and board member information
 - `activity.html` - Activity slider, archive, and Admin update controls
 - `login.html` - Email/password login
 - `president.html` - President statement editor
-- `dashboard.html` - Role-based dashboard
+- `dashboard.html` - Member home and role-based dashboard
 - `contact.html` - Contact information and enquiry form
 
 ## Access Model
 
+- Registered user: profile, events, activity updates, members, and approved promotions
 - Admin: account oversight, activity updates, activity deletion, and promotion approval
 - President: president statement management
 - Silver member: business promotion access with three updates per month
 - Gold member: business promotion access with one update per week
 - Platinum member: business promotion access with two updates per week
+
+Individual Ordinary and Individual Affiliate memberships create registered member accounts without business promotion posting rights.
 
 ## Backend Preparation
 

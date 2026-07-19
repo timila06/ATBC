@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard | ATBC</title>
-    <link rel="stylesheet" href="styles.css?v=20260722" />
+    <title>Member Home | ATBC</title>
+    <link rel="stylesheet" href="styles.css?v=20260723" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   </head>
   <body>
@@ -13,32 +13,40 @@
       <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation"><span></span><span></span><span></span></button>
       <nav class="main-nav" id="mainNav">
         <a href="index.html">Home</a>
-        <a href="about.html">About Us</a>
-        <a href="memberships.html">Memberships</a>
-        <a href="sponsors.html">Sponsor</a>
-        <a href="mission.html">Mission</a>
-        <a href="promotion.html">Promotion</a>
-        <a href="board-members.html">Board Members</a>
+        <a href="events.html">Events</a>
         <a href="activity.html">Activity</a>
-        <a href="login.html">Login</a>
-        <a href="contact.html" class="nav-cta">Contact</a>
+        <a href="promotion.html">Promotion</a>
+        <a href="member-directory.html">Members</a>
+        <a href="profile.html">Profile</a>
+        <a href="memberships.html">Memberships</a>
+        <button class="nav-cta nav-button" id="logoutBtn" type="button">Logout</button>
       </nav>
     </header>
 
-    <main class="page-main">
-      <section class="page-hero dashboard-hero">
-        <div class="section-inner">
-          <p class="eyebrow">Account dashboard</p>
-          <h1 id="dashboardTitle">Welcome to ATBC.</h1>
-          <p id="dashboardIntro">Your website tools appear below.</p>
-          <button class="btn btn-gold" id="logoutBtn" type="button">Logout</button>
+    <main class="page-main dashboard-page">
+      <section class="account-hero">
+        <div class="section-inner account-hero-inner">
+          <div>
+            <p class="eyebrow">Member home</p>
+            <h1 id="dashboardTitle">Welcome to ATBC.</h1>
+            <p id="dashboardIntro">Your ATBC account access is active.</p>
+          </div>
+          <div class="account-hero-actions">
+            <a class="btn btn-primary role-member-only" href="promotion.html">Manage promotion</a>
+            <a class="btn btn-outline-navy role-visitor-only" href="memberships.html">Upgrade membership</a>
+            <a class="btn btn-gold role-president-only" href="president.html">President editor</a>
+          </div>
         </div>
       </section>
 
-      <section class="content-page-block">
+      <section class="member-home-section">
+        <div class="section-inner member-home-shell" id="memberHomeShell"></div>
+      </section>
+
+      <section class="content-page-block dashboard-admin-tools">
         <div class="section-inner dashboard-grid">
           <article class="dashboard-card role-admin-only">
-            <h2>Admin</h2>
+            <h2>Admin controls</h2>
             <p>Manage registered accounts, activity updates, and member promotion approvals.</p>
             <div class="dashboard-actions">
               <a class="btn btn-primary" href="activity.html">Manage activity</a>
@@ -52,24 +60,12 @@
             <p>Update the monthly President statement shown on the homepage.</p>
             <a class="btn btn-primary" href="president.html">Edit statement</a>
           </article>
-
-          <article class="dashboard-card role-member-only">
-            <h2>Business Promotion</h2>
-            <p>Create, edit, and manage your business promotion for admin approval.</p>
-            <a class="btn btn-primary" href="promotion.html">Manage promotion</a>
-          </article>
-
-          <article class="dashboard-card role-visitor-only">
-            <h2>Membership Access</h2>
-            <p>Select a paid membership tier to unlock business promotion tools.</p>
-            <a class="btn btn-gold" href="memberships.html">View memberships</a>
-          </article>
         </div>
       </section>
     </main>
 
-    <div class="toast" id="toast"><span class="toast-icon">✓</span><span id="toastMsg">Updated.</span></div>
-    <script src="supabase-config.js?v=20260722"></script>
-    <script src="script.js?v=20260722"></script>
+    <div class="toast" id="toast"><span class="toast-icon">OK</span><span id="toastMsg">Updated.</span></div>
+    <script src="supabase-config.js?v=20260723"></script>
+    <script src="script.js?v=20260723"></script>
   </body>
 </html>
