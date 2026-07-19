@@ -954,7 +954,7 @@ section {
   line-height: 1.45;
 }
 .membership-benefits li::before {
-  content: 'OK';
+  content: '✓';
   color: var(--gold);
   font-weight: 800;
   flex-shrink: 0;
@@ -2614,7 +2614,7 @@ footer {
 }
 
 .tier-catalogue-card li::before {
-  content: "OK";
+  content: "✓";
   color: var(--gold);
   margin-right: 8px;
 }
