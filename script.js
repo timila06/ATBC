@@ -8,10 +8,7 @@ const toastMsg = document.getElementById("toastMsg");
 const defaultPresidentStatement = "As of July 2026, M.L. Laksasubha Kridakon will assume the role of President of the Australia Thailand Business Council (ATBC). M.L. Laksasubha brings extensive leadership experience, having served as President of the Australian Alumni Association (Thailand) for the past 10 years and as a Board Director of the Australian-Thai Chamber of Commerce (AustCham Thailand) for more than 16 years. She also made history as the first Thai female President of AustCham Thailand. In addition to her leadership roles, she is a successful business owner with interests spanning the hospitality and hotel sector, international education, training and consultancy services, and real estate development. Under her leadership, ATBC is expected to further strengthen economic, trade, and investment ties between Australia and Thailand. Working closely with key organisations such as the Thai Board of Investment (BOI), the Board of Trade of Thailand, the Thai Chamber of Commerce, and various government agencies, she will actively promote bilateral trade, investment, and business development opportunities between the two countries.";
 const oldShortPresidentStatement = "As of July 2026, M.L. Laksasubha Kridakon will assume the role of President. Under her leadership, ATBC is expected to further strengthen economic, trade, and investment ties between Australia and Thailand.";
 
-const roleAccounts = [
-  { role: "admin", name: "ATBC Admin", email: "admin@atbc.org", password: "Admin@123" },
-  { role: "president", name: "President", email: "president@atbc.org", password: "President@123" }
-];
+const roleAccounts = [];
 
 const tierRules = {
   "individual-ordinary": { label: "Individual Ordinary", updates: 0, windowDays: 30, price: 3500, slots: 1, type: "individual" },
@@ -24,6 +21,16 @@ const tierRules = {
 const promotionRoles = ["silver", "gold", "platinum"];
 
 let supabaseClient = null;
+let supabaseReady = false;
+let currentSupabaseUser = null;
+const appState = {
+  users: null,
+  profiles: null,
+  activities: null,
+  events: null,
+  promotions: null,
+  presidentStatement: null
+};
 
 async function initSupabase() {
   const config = window.ATBC_SUPABASE || {};
@@ -31,8 +38,13 @@ async function initSupabase() {
   try {
     const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
     supabaseClient = createClient(config.url, config.anonKey);
+    supabaseReady = true;
+    const { data: sessionData } = await supabaseClient.auth.getSession();
+    currentSupabaseUser = sessionData?.session?.user || null;
+    await hydrateSupabaseState();
     return supabaseClient;
   } catch {
+    supabaseReady = false;
     return null;
   }
 }
@@ -61,6 +73,179 @@ const defaultActivities = [
   }
 ];
 
+const defaultEvents = [
+  { id: "business-outlook-forum", title: "Australia-Thailand Business Outlook Forum", date: "2026-08-20", location: "Bangkok", summary: "A flagship discussion on investment conditions, market access, and member opportunities.", image: "", link: "", details: "" },
+  { id: "member-networking-evening", title: "Member Networking Evening", date: "2026-09-05", location: "Bangkok", summary: "A practical relationship-building evening for members, sponsors, and partner organisations.", image: "", link: "", details: "" },
+  { id: "trade-mission-briefing", title: "Trade Mission Briefing", date: "2026-09-28", location: "Hybrid", summary: "A preparatory session for businesses exploring cross-border trade missions and roadshows.", image: "", link: "", details: "" }
+];
+
+function dbActivityToUi(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    date: row.activity_date,
+    category: row.category,
+    summary: row.summary,
+    image: row.image_url || "",
+    link: row.external_link || "",
+    details: row.details || ""
+  };
+}
+
+function dbEventToUi(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    date: row.event_date?.slice(0, 10),
+    location: row.location || "",
+    summary: row.summary,
+    image: row.image_url || "",
+    link: row.external_link || "",
+    details: row.details || ""
+  };
+}
+
+function uiEventToDb(item) {
+  return {
+    id: item.id,
+    title: item.title,
+    event_date: item.date,
+    location: item.location,
+    summary: item.summary,
+    image_url: item.image || "",
+    external_link: item.link || "",
+    details: item.details || ""
+  };
+}
+
+function uiActivityToDb(item) {
+  return {
+    id: item.id,
+    title: item.title,
+    activity_date: item.date,
+    category: item.category,
+    summary: item.summary,
+    image_url: item.image || "",
+    external_link: item.link || "",
+    details: item.details || ""
+  };
+}
+
+function dbPromotionToUi(row) {
+  return {
+    id: row.id,
+    ownerId: row.owner_id,
+    ownerEmail: row.owner_email,
+    ownerName: row.owner_name || "",
+    tier: row.tier,
+    businessName: row.business_name,
+    offerTitle: row.offer_title,
+    website: row.website,
+    description: row.description,
+    image: row.image_url || "",
+    details: row.details || "",
+    status: row.status,
+    updateLog: row.update_log || [],
+    approvedAt: row.approved_at || ""
+  };
+}
+
+function uiPromotionToDb(item) {
+  return {
+    id: item.id,
+    owner_id: currentSupabaseUser?.id || item.ownerId || null,
+    owner_email: item.ownerEmail,
+    owner_name: item.ownerName || "",
+    tier: item.tier,
+    business_name: item.businessName,
+    offer_title: item.offerTitle,
+    website: item.website,
+    description: item.description,
+    image_url: item.image || "",
+    details: item.details || "",
+    status: item.status,
+    update_log: item.updateLog || [],
+    approved_at: item.approvedAt || null
+  };
+}
+
+function dbProfileToUser(row) {
+  return {
+    role: row.role,
+    tier: row.member_tier,
+    name: row.full_name,
+    email: row.email,
+    businessName: row.business_name,
+    phone: row.phone,
+    position: row.position,
+    industry: row.industry,
+    registeredAt: row.created_at,
+    paidAt: row.paid_at
+  };
+}
+
+function dbProfileToProfile(row) {
+  return {
+    name: row.full_name,
+    email: row.email,
+    photo: row.avatar_url || "",
+    phone: row.phone || "",
+    company: row.business_name || "",
+    position: row.position || "",
+    industry: row.industry || "",
+    bio: row.workplace_details || "",
+    tier: row.member_tier || "",
+    notifications: {
+      atbcUpdates: row.notification_preferences?.atbc_updates !== false,
+      memberPromotions: row.notification_preferences?.member_promotions !== false
+    }
+  };
+}
+
+async function hydrateSupabaseState() {
+  if (!supabaseClient) return;
+  const [activitiesRes, eventsRes, promotionsRes, statementRes, profileRes] = await Promise.all([
+    supabaseClient.from("activities").select("*").order("activity_date", { ascending: false }),
+    supabaseClient.from("events").select("*").order("event_date", { ascending: true }),
+    supabaseClient.from("promotions").select("*").order("created_at", { ascending: false }),
+    supabaseClient.from("president_statements").select("*").order("updated_at", { ascending: false }).limit(1),
+    currentSupabaseUser ? supabaseClient.from("profiles").select("*").eq("id", currentSupabaseUser.id).maybeSingle() : Promise.resolve({ data: null })
+  ]);
+  if (!activitiesRes.error && activitiesRes.data?.length) appState.activities = activitiesRes.data.map(dbActivityToUi);
+  if (!eventsRes.error && eventsRes.data?.length) appState.events = eventsRes.data.map(dbEventToUi);
+  if (!promotionsRes.error && promotionsRes.data) appState.promotions = promotionsRes.data.map(dbPromotionToUi);
+  if (!statementRes.error && statementRes.data?.[0]?.statement) appState.presidentStatement = statementRes.data[0].statement;
+  if (!profileRes.error && profileRes.data) {
+    const profile = dbProfileToProfile(profileRes.data);
+    appState.users = [dbProfileToUser(profileRes.data)];
+    appState.profiles = { [profile.email]: profile };
+    localStorage.setItem("atbcRole", profileRes.data.role);
+    localStorage.setItem("atbcUserName", profileRes.data.full_name);
+    localStorage.setItem("atbcUserEmail", profileRes.data.email);
+  }
+}
+
+async function queueEmailNotifications(type, subject, body = "") {
+  if (!supabaseReady) return;
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("id,email,notification_preferences");
+  if (error || !data?.length) return;
+  const rows = data
+    .filter((profile) => {
+      if (type === "promotion") return profile.notification_preferences?.member_promotions !== false;
+      return profile.notification_preferences?.atbc_updates !== false;
+    })
+    .map((profile) => ({
+      profile_id: profile.id,
+      email: profile.email,
+      notification_type: type,
+      subject,
+      body
+    }));
+  if (rows.length) await supabaseClient.from("notification_queue").insert(rows);
+}
+
 function showToast(message) {
   if (!toast || !toastMsg) return;
   toastMsg.textContent = message;
@@ -82,33 +267,78 @@ function updateProgress() {
 }
 
 function getActivities() {
+  if (appState.activities) return appState.activities;
   const saved = localStorage.getItem("atbcActivities");
   return saved ? JSON.parse(saved) : defaultActivities;
 }
 
 function saveActivities(list) {
+  appState.activities = list;
   localStorage.setItem("atbcActivities", JSON.stringify(list));
 }
 
-function deleteActivity(id) {
+async function upsertActivity(item) {
+  saveActivities([item, ...getActivities().filter((activity) => activity.id !== item.id)]);
+  if (supabaseReady) {
+    await supabaseClient.from("activities").upsert(uiActivityToDb(item));
+    await queueEmailNotifications("activity", item.title, item.summary);
+  }
+}
+
+async function removeActivity(id) {
+  saveActivities(getActivities().filter((item) => item.id !== id));
+  if (supabaseReady) {
+    await supabaseClient.from("activities").delete().eq("id", id);
+  }
+}
+
+function getEvents() {
+  if (appState.events) return appState.events;
+  const saved = localStorage.getItem("atbcEvents");
+  return saved ? JSON.parse(saved) : defaultEvents;
+}
+
+function saveEvents(list) {
+  appState.events = list;
+  localStorage.setItem("atbcEvents", JSON.stringify(list));
+}
+
+async function upsertEvent(item) {
+  saveEvents([item, ...getEvents().filter((event) => event.id !== item.id)]);
+  if (supabaseReady) {
+    await supabaseClient.from("events").upsert(uiEventToDb(item));
+    await queueEmailNotifications("event", item.title, item.summary);
+  }
+}
+
+async function removeEvent(id) {
+  saveEvents(getEvents().filter((item) => item.id !== id));
+  if (supabaseReady) {
+    await supabaseClient.from("events").delete().eq("id", id);
+  }
+}
+
+async function deleteActivity(id) {
   const { role } = getCurrentUser();
   const isLoggedIn = Boolean(localStorage.getItem("atbcUserEmail"));
   if (!isLoggedIn || !["admin", "president"].includes(role)) {
     showToast("Authorized access is required.");
     return;
   }
-  saveActivities(getActivities().filter((item) => item.id !== id));
+  await removeActivity(id);
   renderActivitySlider();
   renderActivityList();
   showToast("Activity deleted.");
 }
 
 function getUsers() {
+  if (appState.users) return appState.users;
   const saved = localStorage.getItem("atbcUsers");
   return saved ? JSON.parse(saved) : [];
 }
 
 function saveUsers(users) {
+  appState.users = users;
   localStorage.setItem("atbcUsers", JSON.stringify(users));
 }
 
@@ -120,6 +350,7 @@ function getCurrentUser() {
 }
 
 function getProfiles() {
+  if (appState.profiles) return appState.profiles;
   const saved = localStorage.getItem("atbcProfiles");
   return saved ? JSON.parse(saved) : {};
 }
@@ -127,7 +358,31 @@ function getProfiles() {
 function saveProfile(email, profile) {
   const profiles = getProfiles();
   profiles[email] = { ...(profiles[email] || {}), ...profile, updatedAt: new Date().toISOString() };
+  appState.profiles = profiles;
   localStorage.setItem("atbcProfiles", JSON.stringify(profiles));
+}
+
+async function upsertProfile(email, profile, role = "visitor", tier = "") {
+  saveProfile(email, profile);
+  if (!supabaseReady || !currentSupabaseUser) return;
+  await supabaseClient.from("profiles").upsert({
+    id: currentSupabaseUser.id,
+    full_name: profile.name || localStorage.getItem("atbcUserName") || "ATBC member",
+    email,
+    role,
+    member_tier: tier || profile.tier || null,
+    business_name: profile.company || profile.businessName || "",
+    avatar_url: profile.photo || "",
+    phone: profile.phone || "",
+    position: profile.position || "",
+    industry: profile.industry || "",
+    workplace_details: profile.bio || "",
+    notification_preferences: {
+      atbc_updates: profile.notifications?.atbcUpdates !== false,
+      member_promotions: profile.notifications?.memberPromotions !== false
+    },
+    paid_at: profile.paidAt || null
+  });
 }
 
 function getLoginLog() {
@@ -146,12 +401,43 @@ function addLoginLog(user) {
 }
 
 function getPromotions() {
+  if (appState.promotions) return appState.promotions;
   const saved = localStorage.getItem("atbcPromotions");
   return saved ? JSON.parse(saved) : [];
 }
 
 function savePromotions(list) {
+  appState.promotions = list;
   localStorage.setItem("atbcPromotions", JSON.stringify(list));
+}
+
+async function upsertPromotion(item) {
+  savePromotions([item, ...getPromotions().filter((promotion) => promotion.id !== item.id)]);
+  if (supabaseReady) {
+    await supabaseClient.from("promotions").upsert(uiPromotionToDb(item));
+  }
+}
+
+async function patchPromotion(id, patch) {
+  const next = getPromotions().map((item) => item.id === id ? { ...item, ...patch } : item);
+  savePromotions(next);
+  if (supabaseReady) {
+    const dbPatch = {};
+    if (patch.status) dbPatch.status = patch.status;
+    if (patch.approvedAt) dbPatch.approved_at = patch.approvedAt;
+    await supabaseClient.from("promotions").update(dbPatch).eq("id", id);
+    if (patch.status === "approved") {
+      const approved = next.find((item) => item.id === id);
+      if (approved) await queueEmailNotifications("promotion", approved.offerTitle || approved.businessName, approved.description);
+    }
+  }
+}
+
+async function removePromotion(id) {
+  savePromotions(getPromotions().filter((item) => item.id !== id));
+  if (supabaseReady) {
+    await supabaseClient.from("promotions").delete().eq("id", id);
+  }
 }
 
 function formatDate(value) {
@@ -211,7 +497,7 @@ function renderActivityList() {
 function setupActivityForm() {
   const form = document.getElementById("activityForm");
   if (!form) return;
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const role = localStorage.getItem("atbcRole") || "visitor";
     const isLoggedIn = Boolean(localStorage.getItem("atbcUserEmail"));
@@ -230,7 +516,7 @@ function setupActivityForm() {
       link: data.link || "",
       details: data.details || ""
     };
-    saveActivities([item, ...getActivities()]);
+    await upsertActivity(item);
     form.reset();
     renderActivitySlider();
     renderActivityList();
@@ -268,7 +554,7 @@ function renderPromotions() {
     });
     memberList.querySelectorAll("[data-delete-promotion]").forEach((button) => {
       button.addEventListener("click", () => {
-        savePromotions(getPromotions().filter((item) => item.id !== button.dataset.deletePromotion));
+        removePromotion(button.dataset.deletePromotion);
         renderPromotions();
         showToast("Promotion deleted.");
       });
@@ -280,14 +566,14 @@ function renderPromotions() {
     approvalList.innerHTML = managed.length ? managed.map((item) => promotionCard(item, { approvalControls: true, showStatus: true })).join("") : `<p class="empty-state">No promotions have been submitted yet.</p>`;
     approvalList.querySelectorAll("[data-approve-promotion]").forEach((button) => {
       button.addEventListener("click", () => {
-        savePromotions(getPromotions().map((item) => item.id === button.dataset.approvePromotion ? { ...item, status: "approved", approvedAt: new Date().toISOString() } : item));
+        patchPromotion(button.dataset.approvePromotion, { status: "approved", approvedAt: new Date().toISOString() });
         renderPromotions();
         showToast("Promotion approved.");
       });
     });
     approvalList.querySelectorAll("[data-reject-promotion]").forEach((button) => {
       button.addEventListener("click", () => {
-        savePromotions(getPromotions().map((item) => item.id === button.dataset.rejectPromotion ? { ...item, status: "rejected" } : item));
+        patchPromotion(button.dataset.rejectPromotion, { status: "rejected" });
         renderPromotions();
         showToast("Promotion rejected.");
       });
@@ -298,7 +584,7 @@ function renderPromotions() {
           showToast("Admin access is required.");
           return;
         }
-        savePromotions(getPromotions().filter((item) => item.id !== button.dataset.adminDeletePromotion));
+        removePromotion(button.dataset.adminDeletePromotion);
         renderPromotions();
         showToast("Promotion deleted.");
       });
@@ -345,7 +631,7 @@ function loadPromotionForEdit(id) {
 function setupPromotionForm() {
   const form = document.getElementById("promotionForm");
   if (!form) return;
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const role = localStorage.getItem("atbcRole") || "visitor";
     const rule = promotionLimitFor(role);
@@ -375,7 +661,7 @@ function setupPromotionForm() {
       status: "pending",
       updateLog: [new Date().toISOString(), ...updateLog]
     };
-    savePromotions(existing ? promotions.map((promotion) => promotion.id === existing.id ? item : promotion) : [item, ...promotions]);
+    await upsertPromotion(item);
     form.reset();
     renderPromotions();
     showToast("Promotion submitted for approval.");
@@ -383,6 +669,7 @@ function setupPromotionForm() {
 }
 
 function getPresidentStatement() {
+  if (appState.presidentStatement) return appState.presidentStatement;
   const saved = localStorage.getItem("atbcPresidentStatement");
   if (!saved || saved === oldShortPresidentStatement) {
     localStorage.setItem("atbcPresidentStatement", defaultPresidentStatement);
@@ -392,7 +679,14 @@ function getPresidentStatement() {
 }
 
 function savePresidentStatement(value) {
+  appState.presidentStatement = value;
   localStorage.setItem("atbcPresidentStatement", value);
+  if (supabaseReady) {
+    supabaseClient.from("president_statements").insert({
+      statement: value,
+      updated_by: currentSupabaseUser?.id || null
+    });
+  }
 }
 
 function renderPresidentStatement() {
@@ -481,10 +775,25 @@ function setupAuthForms() {
   const logoutBtn = document.getElementById("logoutBtn");
 
   if (loginForm) {
-    loginForm.addEventListener("submit", (event) => {
+    loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const data = Object.fromEntries(new FormData(loginForm).entries());
       const email = data.email.trim().toLowerCase();
+      if (supabaseReady) {
+        const { data: authData, error } = await supabaseClient.auth.signInWithPassword({ email, password: data.password });
+        if (error) {
+          showToast(error.message || "Login details do not match.");
+          return;
+        }
+        currentSupabaseUser = authData.user;
+        await hydrateSupabaseState();
+        const profile = appState.users?.[0] || { role: "visitor", name: email, email };
+        localStorage.setItem("atbcRole", profile.role);
+        localStorage.setItem("atbcUserName", profile.name);
+        localStorage.setItem("atbcUserEmail", profile.email);
+        window.location.href = profile.role === "president" ? "president.html" : "dashboard.html";
+        return;
+      }
       const assigned = roleAccounts.find((account) => account.email === email && account.password === data.password);
       const visitor = getUsers().find((user) => user.email === email && user.password === data.password);
       const user = assigned || visitor;
@@ -501,10 +810,36 @@ function setupAuthForms() {
   }
 
   if (registerForm) {
-    registerForm.addEventListener("submit", (event) => {
+    registerForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const data = Object.fromEntries(new FormData(registerForm).entries());
       const email = data.email.trim().toLowerCase();
+      if (supabaseReady) {
+        const { data: authData, error } = await supabaseClient.auth.signUp({
+          email,
+          password: data.password,
+          options: { data: { full_name: data.name.trim(), role: "visitor" } }
+        });
+        if (error) {
+          showToast(error.message || "Registration failed.");
+          return;
+        }
+        currentSupabaseUser = authData.user;
+        const profile = {
+          name: data.name.trim(),
+          email,
+          notifications: {
+            atbcUpdates: data.notifications === "on",
+            memberPromotions: data.notifications === "on"
+          }
+        };
+        await upsertProfile(email, profile, "visitor");
+        localStorage.setItem("atbcRole", "visitor");
+        localStorage.setItem("atbcUserName", profile.name);
+        localStorage.setItem("atbcUserEmail", email);
+        window.location.href = "dashboard.html";
+        return;
+      }
       const users = getUsers();
       if (roleAccounts.some((account) => account.email === email) || users.some((user) => user.email === email)) {
         showToast("This email is already registered.");
@@ -536,7 +871,8 @@ function setupAuthForms() {
   }
 
   if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
+    logoutBtn.addEventListener("click", async () => {
+      if (supabaseReady) await supabaseClient.auth.signOut();
       localStorage.removeItem("atbcRole");
       localStorage.removeItem("atbcUserName");
       localStorage.removeItem("atbcUserEmail");
@@ -559,11 +895,44 @@ function setupMemberPaymentForm() {
   form.querySelectorAll('input[name="duration"]').forEach((input) => {
     input.addEventListener("change", () => renderMembershipApplication(rule));
   });
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(form).entries());
     const email = data.email.trim().toLowerCase();
     const isPromotionMember = promotionRoles.includes(data.tier);
+    if (supabaseReady) {
+      const { data: authData, error } = await supabaseClient.auth.signUp({
+        email,
+        password: data.password,
+        options: {
+          data: {
+            full_name: `${data.name.trim()} ${data.lastName?.trim() || ""}`.trim(),
+            requested_tier: data.tier
+          }
+        }
+      });
+      if (error) {
+        showToast(error.message || "Membership registration failed.");
+        return;
+      }
+      currentSupabaseUser = authData.user;
+      const profile = {
+        name: `${data.name.trim()} ${data.lastName?.trim() || ""}`.trim(),
+        email,
+        phone: data.phone,
+        company: data.businessName,
+        position: data.position,
+        tier: data.tier,
+        paidAt: new Date().toISOString(),
+        notifications: { atbcUpdates: true, memberPromotions: true }
+      };
+      await upsertProfile(email, profile, isPromotionMember ? data.tier : "visitor", data.tier);
+      localStorage.setItem("atbcRole", isPromotionMember ? data.tier : "visitor");
+      localStorage.setItem("atbcUserName", profile.name);
+      localStorage.setItem("atbcUserEmail", email);
+      window.location.href = isPromotionMember ? "promotion.html" : "dashboard.html";
+      return;
+    }
     const users = getUsers().filter((user) => user.email !== email);
     const user = {
       role: isPromotionMember ? data.tier : "visitor",
@@ -692,10 +1061,11 @@ function setupProfileForm() {
   const memberPromos = document.getElementById("notifyPromotions");
   if (atbcUpdates) atbcUpdates.checked = profile.notifications?.atbcUpdates !== false;
   if (memberPromos) memberPromos.checked = profile.notifications?.memberPromotions !== false;
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(form).entries());
-    saveProfile(email, {
+    const { role } = getCurrentUser();
+    await upsertProfile(email, {
       name: data.name,
       photo: data.photo,
       phone: data.phone,
@@ -707,7 +1077,7 @@ function setupProfileForm() {
         atbcUpdates: data.notifyAtbc === "on",
         memberPromotions: data.notifyPromotions === "on"
       }
-    });
+    }, role, profile.tier || "");
     const users = getUsers().map((user) => user.email === email ? { ...user, name: data.name } : user);
     saveUsers(users);
     localStorage.setItem("atbcUserName", data.name);
@@ -740,19 +1110,60 @@ function renderMemberDirectory() {
 function renderEvents() {
   const list = document.getElementById("eventsList");
   if (!list) return;
-  const events = [
-    { title: "Australia-Thailand Business Outlook Forum", date: "2026-08-20", location: "Bangkok", text: "A flagship discussion on investment conditions, market access, and member opportunities." },
-    { title: "Member Networking Evening", date: "2026-09-05", location: "Bangkok", text: "A practical relationship-building evening for members, sponsors, and partner organisations." },
-    { title: "Trade Mission Briefing", date: "2026-09-28", location: "Hybrid", text: "A preparatory session for businesses exploring cross-border trade missions and roadshows." }
-  ];
+  const events = getEvents().sort((a, b) => new Date(a.date) - new Date(b.date));
   list.innerHTML = events.map((event) => `
     <article class="event-card">
       <span>${formatDate(event.date)} - ${escapeHtml(event.location)}</span>
       <h3>${escapeHtml(event.title)}</h3>
-      <p>${escapeHtml(event.text)}</p>
-      <a class="btn btn-outline-navy" href="contact.html">Register interest</a>
+      <p>${escapeHtml(event.summary)}</p>
+      ${mediaMarkup(event)}
+      <div class="promotion-actions">
+        <a class="btn btn-outline-navy" href="${escapeHtml(event.link || "contact.html")}" ${event.link ? 'target="_blank" rel="noreferrer noopener"' : ""}>Register interest</a>
+        <button class="btn btn-red role-president-only" type="button" data-delete-event="${escapeHtml(event.id)}">Delete</button>
+      </div>
     </article>
   `).join("");
+  list.querySelectorAll("[data-delete-event]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const { role } = getCurrentUser();
+      if (!["admin", "president"].includes(role) || !localStorage.getItem("atbcUserEmail")) {
+        showToast("Authorized access is required.");
+        return;
+      }
+      await removeEvent(button.dataset.deleteEvent);
+      renderEvents();
+      showToast("Event deleted.");
+    });
+  });
+  applyRoleAccess();
+}
+
+function setupEventForm() {
+  const form = document.getElementById("eventForm");
+  if (!form) return;
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const { role } = getCurrentUser();
+    if (!["admin", "president"].includes(role) || !localStorage.getItem("atbcUserEmail")) {
+      showToast("Authorized access is required.");
+      return;
+    }
+    const data = Object.fromEntries(new FormData(form).entries());
+    const item = {
+      id: data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `event-${Date.now()}`,
+      title: data.title,
+      date: data.date,
+      location: data.location,
+      summary: data.summary,
+      image: data.image || "",
+      link: data.link || "",
+      details: data.details || ""
+    };
+    await upsertEvent(item);
+    form.reset();
+    renderEvents();
+    showToast("Event posted.");
+  });
 }
 
 function formatBaht(value) {
@@ -880,6 +1291,7 @@ initSupabase().finally(() => {
   setupProfileForm();
   renderMemberDirectory();
   renderEvents();
+  setupEventForm();
   updateHeader();
   updateProgress();
 });

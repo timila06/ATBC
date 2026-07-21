@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Events | ATBC</title>
-    <link rel="stylesheet" href="styles.css?v=20260725" />
+    <link rel="stylesheet" href="styles.css?v=20260726" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   </head>
   <body>
@@ -31,10 +31,25 @@
         </div>
       </section>
       <section class="content-page-block">
-        <div class="section-inner event-grid" id="eventsList"></div>
+        <div class="section-inner">
+          <div class="event-grid" id="eventsList"></div>
+          <div class="activity-form-card role-president-only">
+            <h3>Post event</h3>
+            <form id="eventForm">
+              <div class="form-group"><label for="event-title">Event title</label><input id="event-title" name="title" required /></div>
+              <div class="form-group"><label for="event-date">Date</label><input id="event-date" name="date" type="date" required /></div>
+              <div class="form-group"><label for="event-location">Location</label><input id="event-location" name="location" required /></div>
+              <div class="form-group"><label for="event-image">Image URL</label><input id="event-image" name="image" type="url" placeholder="https://..." /></div>
+              <div class="form-group"><label for="event-link">Registration link</label><input id="event-link" name="link" type="url" placeholder="https://..." /></div>
+              <div class="form-group"><label for="event-summary">Short summary</label><textarea id="event-summary" name="summary" required></textarea></div>
+              <div class="form-group"><label for="event-details">Additional details</label><textarea id="event-details" name="details"></textarea></div>
+              <button class="btn btn-primary" type="submit">Post event</button>
+            </form>
+          </div>
+        </div>
       </section>
     </main>
-    <script src="supabase-config.js?v=20260725"></script>
-    <script src="script.js?v=20260725"></script>
+    <script src="supabase-config.js?v=20260726"></script>
+    <script src="script.js?v=20260726"></script>
   </body>
 </html>

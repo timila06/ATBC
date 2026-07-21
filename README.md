@@ -38,9 +38,11 @@ Individual Ordinary and Individual Affiliate memberships create registered membe
 
 ## Backend Preparation
 
-Supabase is prepared as the authentication and database layer. Add the project URL and anon key in `supabase-config.js`, then apply `supabase-schema.sql` in the Supabase SQL editor.
+Supabase is prepared as the authentication and database layer. Add the project URL and anon key in `supabase-config.js`, then apply `supabase-schema.sql` in the Supabase SQL editor. When Supabase credentials are present, the site uses Supabase Auth and database tables. Without credentials, it falls back to local browser storage for preview only.
 
 Vercel deployment files are included through `package.json` and `vercel.json`.
+
+See `PRODUCTION_SETUP.md` for the exact launch steps.
 
 ## Assets
 
